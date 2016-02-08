@@ -19,25 +19,6 @@ class Component {
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "Hello Stage"
-/*
-    scene = new Scene {
-      fill = Color.LightGreen
-
-      val rect = new Rectangle {
-        x = 25
-        y = 40
-        width = 100
-        height = 100
-        fill <== when (hover) choose Color.Green otherwise Color.Red
-      }
-      val graphic = new Image("file:lc2200datapath.png")
-      val imgview = new ImageView(graphic)
-      imgview.layoutX = 25
-      imgview.layoutY = 140
-
-      content = rect
-      content += imgview
-      */
     width = 640
     height = 480
     scene = new Scene(new javafx.scene.Scene(root))
@@ -46,6 +27,9 @@ object HelloStageDemo extends JFXApp {
     center = simulatorPane
   }
   lazy val simulatorPane: Pane = new Pane {
+    val graphic = new Image("file:lc2200datapath.png")
+    val imgview = new ImageView(graphic)
+    children += imgview
   }
 
   def drawDataPath(xx: Integer, yy: Integer) = {
@@ -58,7 +42,8 @@ object HelloStageDemo extends JFXApp {
     }
   }
   stage.getIcons().add(new Image("file:CPU.png"))
-  com.apple.eawt.Application.getApplication().setDockIconImage("file:CPU.png")
+  //TODO: this line crashes on my machine. Is this a missing package or is this line OS-dependent?
+  //com.apple.eawt.Application.getApplication().setDockIconImage("file:CPU.png")
 }
 
 /*

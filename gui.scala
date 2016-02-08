@@ -42,8 +42,6 @@ object HelloStageDemo extends JFXApp {
     }
   }
   stage.getIcons().add(new Image("file:CPU.png"))
-  //TODO: this line crashes on my machine. Is this a missing package or is this line OS-dependent?
-  //com.apple.eawt.Application.getApplication().setDockIconImage("file:CPU.png")
 }
 
 /*

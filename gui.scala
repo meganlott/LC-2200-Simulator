@@ -3,7 +3,7 @@ import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
-import javafx.scene.image.Image
+import javafx.scene.image.{Image, ImageView}
 
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
@@ -12,13 +12,21 @@ object HelloStageDemo extends JFXApp {
     height = 450
     scene = new Scene {
       fill = Color.LightGreen
-      content = new Rectangle {
+
+      val rect = new Rectangle {
         x = 25
         y = 40
         width = 100
         height = 100
         fill <== when (hover) choose Color.Green otherwise Color.Red
       }
+      val graphic = new Image("file:lc2200datapath.png")
+      val imgview = new ImageView(graphic)
+      imgview.layoutX = 25
+      imgview.layoutY = 140
+
+      content = rect
+      content += imgview
     }
   }
   stage.getIcons().add(new Image("file:CPU.png"))

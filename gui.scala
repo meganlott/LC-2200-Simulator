@@ -3,6 +3,7 @@ import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
+import javafx.scene.image.Image
 
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
@@ -20,6 +21,7 @@ object HelloStageDemo extends JFXApp {
       }
     }
   }
+  stage.getIcons().add(new Image("file:CPU.png"))
 }
 
 

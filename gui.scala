@@ -9,13 +9,15 @@ import scalafx.scene.shape._
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint._
 import scalafx.scene.text._
+import scalafx.scene.shape.Rectangle
+import javafx.scene.image.Image
 
 class Component {
   
 }
 
 object HelloStageDemo extends JFXApp {
-  stage = new Stage {
+  stage = new JFXApp.PrimaryStage {
     title.value = "Hello Stage"
     width = 640
     height = 480
@@ -25,7 +27,6 @@ object HelloStageDemo extends JFXApp {
     center = simulatorPane
   }
   lazy val simulatorPane: Pane = new Pane {
-    content = drawDataPath(0,0)
   }
 
   def drawDataPath(xx: Integer, yy: Integer) = {
@@ -37,11 +38,11 @@ object HelloStageDemo extends JFXApp {
       fill = Cyan
     }
   }
+  stage.getIcons().add(new Image("file:CPU.png"))
 }
 
 /*
 object HelloStageDemo extends JFXApp {
-  stage = new JFXApp.PrimaryStage {
     title.value = "Hello Stage"
     width = 640
     height = 480

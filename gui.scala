@@ -39,7 +39,6 @@ object HelloStageDemo extends JFXApp {
     }
   }
   stage.getIcons().add(new Image("file:CPU.png"))
-  com.apple.eawt.Application.getApplication().setDockIconImage("file:CPU.png")
 }
 
 /*

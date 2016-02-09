@@ -29,7 +29,25 @@ object HelloStageDemo extends JFXApp {
   lazy val simulatorPane: Pane = new Pane {
     val graphic = new Image("file:lc2200datapath.png")
     val imgview = new ImageView(graphic)
-    children += imgview
+   // children += imgview
+    val rec = new Rectangle {
+        x = 2
+        y = 3
+        width = 400
+        height = 400
+        fill = Cyan
+        stroke = Black
+        strokeWidth = 2
+    }
+
+    val polygon = new Polygon {
+        fill = Cyan
+        stroke = Black
+        strokeWidth = 2
+    }
+    
+    polygon.addAll(
+    children += rec
   }
 
   def drawDataPath(xx: Integer, yy: Integer) = {

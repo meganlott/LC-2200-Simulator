@@ -11,6 +11,7 @@ import scalafx.scene.paint._
 import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import javafx.scene.image.{Image, ImageView}
+import scalafx.scene.control.Button
 
 class Component {
   
@@ -18,18 +19,27 @@ class Component {
 
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
-    title.value = "Hello Stage"
+    title.value = "LC-2200 Simulator"
     width = 640
     height = 480
     scene = new Scene(new javafx.scene.Scene(root))
   }
   lazy val root = new BorderPane{
     center = simulatorPane
+    top = topPane
   }
   lazy val simulatorPane: Pane = new Pane {
     val graphic = new Image("file:lc2200datapath.png")
     val imgview = new ImageView(graphic)
     children += imgview
+  }
+
+  lazy val topPane: Pane = new Pane {
+    val stepForward = new Button("Step Forward")
+    stepForward.layoutX = 20
+    stepForward.layoutY = 50
+    //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
+    children += stepForward
   }
 
   def drawDataPath(xx: Integer, yy: Integer) = {
@@ -40,6 +50,12 @@ object HelloStageDemo extends JFXApp {
       height = 200
       fill = Cyan
     }
+  }
+
+  def addButtons() = {
+    val stepForward = new Button("Step Forward")
+    stepForward.layoutX = 20
+    stepForward.layoutY = 50
   }
   stage.getIcons().add(new Image("file:CPU.png"))
 }

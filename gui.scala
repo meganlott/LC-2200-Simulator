@@ -10,6 +10,7 @@ import scalafx.scene.paint.Color._
 import scalafx.scene.paint._
 import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
+import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.Button
 
@@ -20,8 +21,8 @@ class Component {
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
-    width = 640
-    height = 480
+    width = 1000
+    height = 850
     scene = new Scene(new javafx.scene.Scene(root))
   }
   lazy val root = new BorderPane{
@@ -31,25 +32,38 @@ object HelloStageDemo extends JFXApp {
   lazy val simulatorPane: Pane = new Pane {
     val graphic = new Image("file:lc2200datapath.png")
     val imgview = new ImageView(graphic)
-   // children += imgview
+    children += imgview
     val rec = new Rectangle {
-        x = 2
-        y = 3
+        x = 0
+        y = 0
         width = 400
         height = 400
-        fill = Cyan
+        fill = Yellow
         stroke = Black
         strokeWidth = 2
     }
 
+    //you can update these values after instantiation easily for annimation 
+    val line = new Line {
+        stroke = Black
+        strokeWidth = 3
+        startX = 0
+        startY = 0
+        endX = 250
+        endY = 250
+    }
+    //polygons are just impossible, it turns out. Rip polygons
     val polygon = new Polygon {
+        //points = (100.0, 10.0, 200.0, 200.0, 300.0, 300.0)
         fill = Cyan
         stroke = Black
         strokeWidth = 2
     }
-    
-    polygon.addAll(
+    //this prints something, but I can't manipulate the value at all
+    println(polygon.points)
+   // polygon.points = Array[Double](100.0,100.0, 200.0,200.0,300.0,300.0)
     children += rec
+    children += line
   }
 
   lazy val topPane: Pane = new Pane {

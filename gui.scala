@@ -16,12 +16,12 @@ import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 
-class SComponent(val xx: Double, val yy: Double) extends Rectangle{
+class SComponent(val xx: Double, val yy: Double, val w: Double, val h: Double, val n: String) extends Rectangle{
   x = xx;
   y = yy;
-  width = 400
-  height = 400
-  fill = Yellow
+  width = w
+  height = h
+  fill = White
   stroke = Black
   strokeWidth = 2
 }
@@ -33,6 +33,9 @@ class Wire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) exten
   endY = ey
   stroke = Black
   strokeWidth = 3
+}
+
+class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
 }
 
 case class RegInfo(name:String, mem:String)
@@ -54,20 +57,75 @@ object HelloStageDemo extends JFXApp {
     //val imgview = new ImageView(graphic)
     //children += imgview
     
-    children += new SComponent(40, 50);
+    val r = new Rectangle {
+      x = 0
+      y = 0
+      width = 720
+      height = 520
+      stroke = Black
+      fill = White
+    }
+    children += r
 
-    //polygons are just impossible, it turns out. Rip polygons
+    children += new Wire(20,20,720,20);
+    children += new Wire(20,20,20,320);
+    children += new Wire(20,320,720,320);
+
+    children += new Wire(80,20,80,320);
+    children += new SComponent(60, 50, 40, 30, "PC");
+    var t = new Text {
+      x = 70
+      y = 70
+      text = "PC"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    var poly = Polygon(65,270,95,270,80,300);
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
+
+    children += new Wire(140,20,140,120);
+    children += new Wire(190,20,190,120);
+    children += new Wire(165, 210, 165, 320)
+    children += new SComponent(120, 50, 40, 30, "A");
+    children += new SComponent(170, 50, 40, 30, "B");
+    t = new Text {
+      x = 135
+      y = 70
+      text = "A         B"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    poly = Polygon(120,120, 160,120, 165,130, 170,120, 210,120, 190, 210, 140, 210);
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
+    t = new Text {
+      x = 150
+      y = 160
+      text = "ALU"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    poly = Polygon(150,270,180,270,165,300)
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
+
+    /*
     val polygon = Polygon(10.0,20.0,10.0,200.0,100.0,20.0)
-    //val polygon = new Polygon {
-        ////points = (100.0, 10.0, 200.0, 200.0, 300.0, 300.0)
-        //fill = Cyan
-        //stroke = Black
-        //strokeWidth = 2
-    //}
-    //this prints something, but I can't manipulate the value at all
-    //println(polygon.points)
-   // polygon.points = Array[Double](100.0,100.0, 200.0,200.0,300.0,300.0)
+    polygon.fill = White
+    polygon.stroke = Black
+    
     children += polygon
+    */
   }
 
   lazy val topPane: Pane = new Pane {

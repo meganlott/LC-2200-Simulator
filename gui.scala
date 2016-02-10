@@ -12,7 +12,7 @@ import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
-import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane}
+import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 
@@ -135,6 +135,16 @@ object HelloStageDemo extends JFXApp {
     stepForward.layoutY = 50
     //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
     children += stepForward
+
+    //instruction selection
+    val instructionSelection = new MenuBar
+    val instructionMenu = new Menu("Choose Instruction")
+    val addItem = new MenuItem("Add")
+    instructionMenu.items = List(addItem)
+    instructionSelection.menus = List(instructionMenu)
+    instructionSelection.layoutX = 185
+    instructionSelection.layoutY = 15
+    children += instructionSelection
   }
 
   lazy val leftPane: Pane = new Pane {

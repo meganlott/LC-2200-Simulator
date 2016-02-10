@@ -24,7 +24,7 @@ class SComponent(val xx: Double, val yy: Double) extends Rectangle{
   strokeWidth = 2
 }
 
-class Wire(val sx: Double, val sY: Double, val ex: Double, val ey: Double) extends Line {
+class Wire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) extends Line {
   startX = sx
   startY = sy
   endX = ex

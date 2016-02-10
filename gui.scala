@@ -123,11 +123,11 @@ object HelloStageDemo extends JFXApp {
     children += poly;
 
     children += new Wire(280,20,280,320);
-    children += new SComponent(240, 120, 80, 100, "PC");
+    children += new SComponent(240, 120, 80, 100, "registers");
     t = new Text {
       x = 247
       y = 150
-      text = "registers\n16x\n32 bits"
+      text = "registers\n16 x\n32 bits"
       style = "-fx-font-size: 12pt"
       fill = Black
     }
@@ -137,6 +137,61 @@ object HelloStageDemo extends JFXApp {
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
+
+    children += new Wire(380,20,380,140);
+    children += new Wire(420,20,420,140);
+    children += new SComponent(360, 50, 40, 30, "MAR");
+    t = new Text {
+      x = 363
+      y = 70
+      text = "MAR"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    children += new Wire(400,160,400,320);
+    children += new SComponent(360, 120, 80, 100, "memory");
+    t = new Text {
+      x = 367
+      y = 150
+      text = "memory\n2^32 x\n32 bits"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    poly = Polygon(385,270,415,270,400,300);
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
+
+    children += new Wire(490,20,490,120);
+    children += new SComponent(470, 50, 40, 30, "IR");
+    t = new Text {
+      x = 473
+      y = 70
+      text = "IR"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+
+    children += new Wire(510,180,510,320);
+    children += new SComponent(480, 200, 60, 40, "sign");
+    t = new Text {
+      x = 486
+      y = 215
+      text = "sign\nextend"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    poly = Polygon(495,270,525,270,510,300);
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
+
   }
 
   lazy val topPane: Pane = new Pane {

@@ -118,14 +118,6 @@ object HelloStageDemo extends JFXApp {
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
-
-    /*
-    val polygon = Polygon(10.0,20.0,10.0,200.0,100.0,20.0)
-    polygon.fill = White
-    polygon.stroke = Black
-    
-    children += polygon
-    */
   }
 
   lazy val topPane: Pane = new Pane {
@@ -190,64 +182,3 @@ object HelloStageDemo extends JFXApp {
   stage.getIcons().add(new Image("file:CPU.png"))
 }
 
-/*
-object HelloStageDemo extends JFXApp {
-    title.value = "Hello Stage"
-    width = 640
-    height = 480
-    scene = new Scene {
-      fill = Color.Blue
-      content = new HBox {
-        children = Seq(
-          new Text {
-            text = "LC-2200"
-            style = "-fx-font-size: 48pt"
-            fill = new LinearGradient(
-              endX = 0,
-              stops = Stops(Cyan, DodgerBlue)
-            )
-            effect = new DropShadow {
-              color = DodgerBlue
-              radius = 25
-              spread = 0.25
-            }
-          },
-          new Rectangle {
-            x = 25
-            y = 40
-            width <== when (hover) choose 200 otherwise 100
-            height = 100
-            fill <== when (hover) choose Color.Green otherwise Color.Red
-          }
-        )
-      }
-    }
-
-  }
-}
-*/
-
-
-
-//import scala.swing._
-
-//class UI extends MainFrame {
-  //title = "GUI Program #1";
-  //preferredSize = new Dimension(640, 480);
-  //contents = new Label("Here is the contents!");
-  //contents = new FlowPanel { 
-    //contents += new Button("huhu") { 
-      //minimumSize = preferredSize
-      //maximumSize = preferredSize
-      //preferredSize = preferredSize
-    //}
-  //}
-//}
-
-//object GuiProgramOne {
-  //def main(arg: Array[String]) {
-    //val ui = new UI
-    //ui.visible = true
-    //println("End of main function.")
-  //}
-//}

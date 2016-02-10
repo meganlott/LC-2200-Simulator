@@ -51,7 +51,9 @@ object HelloStageDemo extends JFXApp {
   lazy val root = new BorderPane{
     center = simulatorPane
     top = topPane
+    topPane.setMinHeight(100)
     left = leftPane
+    leftPane.setMinWidth(200)
   }
   lazy val simulatorPane: Pane = new Pane {
     //val graphic = new Image("file:lc2200datapath.png")
@@ -138,12 +140,22 @@ object HelloStageDemo extends JFXApp {
   }
 
   lazy val topPane: Pane = new Pane {
-    //super.setMinHeight(200)
+    val title = new Label("LC-2200 Simulator")
+    title.layoutX = 20
+    title.layoutY = 0
+    title.style = "-fx-font-size: 36pt"
+    children += title
+
     val stepForward = new Button("Step Forward")
-    stepForward.layoutX = 20
-    stepForward.layoutY = 50
-    //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
+    stepForward.layoutX = 150
+    stepForward.layoutY = 60
+    stepForward.setMinWidth(120)
     children += stepForward
+    val stepBackward = new Button("Step Backward")
+    stepBackward.layoutX = 20
+    stepBackward.layoutY = 60
+    stepBackward.setMinWidth(120)
+    children += stepBackward
 
     //instruction selection
     val instructionSelection = new MenuBar
@@ -151,21 +163,16 @@ object HelloStageDemo extends JFXApp {
     val addItem = new MenuItem("Add")
     instructionMenu.items = List(addItem)
     instructionSelection.menus = List(instructionMenu)
-    instructionSelection.layoutX = 185
-    instructionSelection.layoutY = 15
+    instructionSelection.layoutX = 305
+    instructionSelection.layoutY = 60
     children += instructionSelection
   }
 
   lazy val leftPane: Pane = new Pane {
-    val stepForward = new Button("Step Forward")
-    stepForward.layoutX = 20
-    stepForward.layoutY = 50
-    //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
-    children += stepForward
 
     val regTableLabel = new Label("Register View")
     regTableLabel.layoutX = 20
-    regTableLabel.layoutY = 80
+    regTableLabel.layoutY = 30
     children += regTableLabel
 
     val scrollpane1 : ScrollPane = new ScrollPane 
@@ -192,12 +199,12 @@ object HelloStageDemo extends JFXApp {
     scrollpane1.maxHeight = 200
     scrollpane1.maxWidth = 160
     scrollpane1.layoutX = 20
-    scrollpane1.layoutY = 100
+    scrollpane1.layoutY = 50
     children += scrollpane1
     
     val memTableLabel = new Label("Memory View")
     memTableLabel.layoutX = 20
-    memTableLabel.layoutY = 310
+    memTableLabel.layoutY = 260
     children += memTableLabel
     
     val scrollpane2 : ScrollPane = new ScrollPane 
@@ -224,7 +231,7 @@ object HelloStageDemo extends JFXApp {
     scrollpane2.maxHeight = 200
     scrollpane2.maxWidth = 160
     scrollpane2.layoutX = 20
-    scrollpane2.layoutY = 330
+    scrollpane2.layoutY = 280
     children += scrollpane2
   }
 

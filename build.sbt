@@ -14,4 +14,4 @@ settings(
   libraryDependencies += scalafx
 )
 
-
+fork in run := true

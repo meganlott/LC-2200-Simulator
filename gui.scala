@@ -12,7 +12,7 @@ import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
-import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar}
+import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 
@@ -39,6 +39,7 @@ class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
 }
 
 case class RegInfo(name:String, mem:String)
+case class MemInfo(addr:String, mem:String)
 
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
@@ -119,6 +120,22 @@ object HelloStageDemo extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
+    children += new Wire(280,20,280,320);
+    children += new SComponent(240, 120, 80, 100, "PC");
+    t = new Text {
+      x = 247
+      y = 150
+      text = "registers\n16x\n32 bits"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    poly = Polygon(265,270,295,270,280,300);
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
+
     /*
     val polygon = Polygon(10.0,20.0,10.0,200.0,100.0,20.0)
     polygon.fill = White
@@ -154,6 +171,11 @@ object HelloStageDemo extends JFXApp {
     //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
     children += stepForward
 
+    val regTableLabel = new Label("Register View")
+    regTableLabel.layoutX = 20
+    regTableLabel.layoutY = 80
+    children += regTableLabel
+
     val scrollpane1 : ScrollPane = new ScrollPane 
     val regData = new ObservableBuffer[RegInfo]()
     regData.addAll(RegInfo("R0","0x0000"),
@@ -178,8 +200,40 @@ object HelloStageDemo extends JFXApp {
     scrollpane1.maxHeight = 200
     scrollpane1.maxWidth = 160
     scrollpane1.layoutX = 20
-    scrollpane1.layoutY = 80
+    scrollpane1.layoutY = 100
     children += scrollpane1
+    
+    val memTableLabel = new Label("Memory View")
+    memTableLabel.layoutX = 20
+    memTableLabel.layoutY = 310
+    children += memTableLabel
+    
+    val scrollpane2 : ScrollPane = new ScrollPane 
+    val memData = new ObservableBuffer[MemInfo]()
+    memData.addAll(MemInfo("0x0000","0x0000"),
+        MemInfo("0x0001","0x0001"),
+        MemInfo("0x0002","0x0002"),
+        MemInfo("0x0003","0x0003"),
+        MemInfo("0x0004","0x0004"),
+        MemInfo("0x0005","0x0005"),
+        MemInfo("0x0006","0x0006"),
+        MemInfo("0x0007","0x0007")
+        )
+
+    val memTable = new TableView(memData)
+
+    val col3 = new TableColumn[MemInfo, String]("Address")
+    col3.cellValueFactory = cdf => StringProperty(cdf.value.addr)
+    val col4 = new TableColumn[MemInfo, String]("Value")
+    col4.cellValueFactory = cdf => StringProperty(cdf.value.mem)
+
+    memTable.columns ++= List(col3, col4)
+    scrollpane2.content = memTable
+    scrollpane2.maxHeight = 200
+    scrollpane2.maxWidth = 160
+    scrollpane2.layoutX = 20
+    scrollpane2.layoutY = 330
+    children += scrollpane2
   }
 
   def newComponent(xx: Double, yy: Double) = {

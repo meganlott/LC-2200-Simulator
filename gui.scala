@@ -14,59 +14,63 @@ import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.Button
 
-class Component {
-  
+class SComponent(val xx: Double, val yy: Double) extends Rectangle{
+  x = xx;
+  y = yy;
+  width = 400
+  height = 400
+  fill = Yellow
+  stroke = Black
+  strokeWidth = 2
+}
+
+class Wire(val sx: Double, val sY: Double, val ex: Double, val ey: Double) extends Line {
+  startX = sx
+  startY = sy
+  endX = ex
+  endY = ey
+  stroke = Black
+  strokeWidth = 3
 }
 
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
-    width = 1000
-    height = 850
+    width = 1024
+    height = 768
     scene = new Scene(new javafx.scene.Scene(root))
   }
   lazy val root = new BorderPane{
     center = simulatorPane
     top = topPane
+    left = leftPane
   }
   lazy val simulatorPane: Pane = new Pane {
-    val graphic = new Image("file:lc2200datapath.png")
-    val imgview = new ImageView(graphic)
-    children += imgview
-    val rec = new Rectangle {
-        x = 0
-        y = 0
-        width = 400
-        height = 400
-        fill = Yellow
-        stroke = Black
-        strokeWidth = 2
-    }
+    //val graphic = new Image("file:lc2200datapath.png")
+    //val imgview = new ImageView(graphic)
+    //children += imgview
+    
+    children += new SComponent(40, 50);
 
-    //you can update these values after instantiation easily for annimation 
-    val line = new Line {
-        stroke = Black
-        strokeWidth = 3
-        startX = 0
-        startY = 0
-        endX = 250
-        endY = 250
-    }
     //polygons are just impossible, it turns out. Rip polygons
-    val polygon = new Polygon {
-        //points = (100.0, 10.0, 200.0, 200.0, 300.0, 300.0)
+    /*
+    val polygon = new Path {
+        elements = (100.0, 10.0, 200.0, 200.0, 300.0, 300.0)
         fill = Cyan
         stroke = Black
         strokeWidth = 2
     }
+    */
     //this prints something, but I can't manipulate the value at all
-    println(polygon.points)
+    //println(polygon.points)
    // polygon.points = Array[Double](100.0,100.0, 200.0,200.0,300.0,300.0)
-    children += rec
     children += line
+
+    children += newComponent(20,20);
   }
 
   lazy val topPane: Pane = new Pane {
+    //super.setMinHeight(200)
     val stepForward = new Button("Step Forward")
     stepForward.layoutX = 20
     stepForward.layoutY = 50
@@ -74,13 +78,21 @@ object HelloStageDemo extends JFXApp {
     children += stepForward
   }
 
-  def drawDataPath(xx: Integer, yy: Integer) = {
+  lazy val leftPane: Pane = new Pane {
+    val stepForward = new Button("Step Forward")
+    stepForward.layoutX = 20
+    stepForward.layoutY = 50
+    //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
+    children += stepForward
+  }
+
+  def newComponent(xx: Double, yy: Double) = {
     new Rectangle {
-      x = 2
-      y = 3
-      width = 400
-      height = 200
-      fill = Cyan
+      x = xx;
+      y = yy;
+      width = 20
+      height = 20
+      stroke = Black
     }
   }
 

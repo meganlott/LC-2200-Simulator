@@ -12,7 +12,7 @@ import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
-import scalafx.scene.control.{Button, TableView, TableColumn}
+import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 
@@ -86,20 +86,19 @@ object HelloStageDemo extends JFXApp {
     //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
     children += stepForward
 
+    val scrollpane1 : ScrollPane = new ScrollPane 
     val regData = new ObservableBuffer[RegInfo]()
     regData.addAll(RegInfo("R0","0x0000"),
-      RegInfo("R1","0x0001"),
-      RegInfo("R2","0x0002"),
-      RegInfo("R3","0x0003"),
-      RegInfo("R4","0x0004"),
-      RegInfo("R5","0x0005"),
-      RegInfo("R6","0x0006"),
-      RegInfo("R7","0x0007")
-      )
+        RegInfo("R1","0x0001"),
+        RegInfo("R2","0x0002"),
+        RegInfo("R3","0x0003"),
+        RegInfo("R4","0x0004"),
+        RegInfo("R5","0x0005"),
+        RegInfo("R6","0x0006"),
+        RegInfo("R7","0x0007")
+        )
 
     val regTable = new TableView(regData)
-    regTable.layoutX = 20
-    regTable.layoutY = 70
 
     val col1 = new TableColumn[RegInfo, String]("Register")
     col1.cellValueFactory = cdf => StringProperty(cdf.value.name)
@@ -107,7 +106,12 @@ object HelloStageDemo extends JFXApp {
     col2.cellValueFactory = cdf => StringProperty(cdf.value.mem)
 
     regTable.columns ++= List(col1, col2)
-    children += regTable
+    scrollpane1.content = regTable
+    scrollpane1.maxHeight = 200
+    scrollpane1.maxWidth = 160
+    scrollpane1.layoutX = 20
+    scrollpane1.layoutY = 80
+    children += scrollpane1
   }
 
   def newComponent(xx: Double, yy: Double) = {

@@ -168,9 +168,19 @@ object HelloStageDemo extends JFXApp {
     children += new Wire(490,20,490,120);
     children += new SComponent(470, 50, 40, 30, "IR");
     t = new Text {
-      x = 473
+      x = 482
       y = 70
       text = "IR"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    children += new Wire(120,320,120,460);
+    children += new SComponent(100, 360, 40, 30, "=0?");
+    t = new Text {
+      x = 105
+      y = 380
+      text = "=0?"
       style = "-fx-font-size: 12pt"
       fill = Black
     }
@@ -179,13 +189,23 @@ object HelloStageDemo extends JFXApp {
     children += new Wire(510,180,510,320);
     children += new SComponent(480, 200, 60, 40, "sign");
     t = new Text {
-      x = 486
+      x = 487
       y = 215
       text = "sign\nextend"
+      fill = Black
+    }
+    children += t
+      
+    children += new SComponent(100, 410, 40, 30, "Z");
+    t = new Text {
+      x = 115
+      y = 430
+      text = "Z"
       style = "-fx-font-size: 12pt"
       fill = Black
     }
     children += t
+    
     poly = Polygon(495,270,525,270,510,300);
     poly.fill = White
     poly.stroke = Black

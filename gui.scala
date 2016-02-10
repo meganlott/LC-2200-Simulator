@@ -12,7 +12,9 @@ import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
-import scalafx.scene.control.Button
+import scalafx.scene.control.{Button, TableView, TableColumn}
+import scalafx.collections.ObservableBuffer
+import scalafx.beans.property.{StringProperty}
 
 class SComponent(val xx: Double, val yy: Double, val w: Double, val h: Double, val n: String) extends Rectangle{
   x = xx;
@@ -35,6 +37,8 @@ class Wire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) exten
 
 class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
 }
+
+case class RegInfo(name:String, mem:String)
 
 object HelloStageDemo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
@@ -139,6 +143,29 @@ object HelloStageDemo extends JFXApp {
     stepForward.layoutY = 50
     //stepForward.setStyle("-fx-font: 22 arial; -fx-base: #b6e7c9;");
     children += stepForward
+
+    val regData = new ObservableBuffer[RegInfo]()
+    regData.addAll(RegInfo("R0","0x0000"),
+      RegInfo("R1","0x0001"),
+      RegInfo("R2","0x0002"),
+      RegInfo("R3","0x0003"),
+      RegInfo("R4","0x0004"),
+      RegInfo("R5","0x0005"),
+      RegInfo("R6","0x0006"),
+      RegInfo("R7","0x0007")
+      )
+
+    val regTable = new TableView(regData)
+    regTable.layoutX = 20
+    regTable.layoutY = 70
+
+    val col1 = new TableColumn[RegInfo, String]("Register")
+    col1.cellValueFactory = cdf => StringProperty(cdf.value.name)
+    val col2 = new TableColumn[RegInfo, String]("Value")
+    col2.cellValueFactory = cdf => StringProperty(cdf.value.mem)
+
+    regTable.columns ++= List(col1, col2)
+    children += regTable
   }
 
   def newComponent(xx: Double, yy: Double) = {

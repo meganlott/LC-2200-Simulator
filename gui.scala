@@ -119,6 +119,22 @@ object HelloStageDemo extends JFXApp {
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
+
+    children += new Wire(280,20,280,320);
+    children += new SComponent(240, 120, 80, 100, "PC");
+    t = new Text {
+      x = 247
+      y = 150
+      text = "registers\n16x\n32 bits"
+      style = "-fx-font-size: 12pt"
+      fill = Black
+    }
+    children += t
+    poly = Polygon(265,270,295,270,280,300);
+    poly.fill = White
+    poly.stroke = Black
+    poly.strokeWidth = 2
+    children += poly;
   }
 
   lazy val topPane: Pane = new Pane {

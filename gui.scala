@@ -53,17 +53,19 @@ object HelloStageDemo extends JFXApp {
         endY = 250
     }
     //polygons are just impossible, it turns out. Rip polygons
-    val polygon = new Polygon {
-        //points = (100.0, 10.0, 200.0, 200.0, 300.0, 300.0)
-        fill = Cyan
-        stroke = Black
-        strokeWidth = 2
-    }
+    val polygon = Polygon(10.0,20.0,10.0,200.0,100.0,20.0)
+    //val polygon = new Polygon {
+        ////points = (100.0, 10.0, 200.0, 200.0, 300.0, 300.0)
+        //fill = Cyan
+        //stroke = Black
+        //strokeWidth = 2
+    //}
     //this prints something, but I can't manipulate the value at all
     println(polygon.points)
    // polygon.points = Array[Double](100.0,100.0, 200.0,200.0,300.0,300.0)
     children += rec
     children += line
+    children += polygon
   }
 
   lazy val topPane: Pane = new Pane {

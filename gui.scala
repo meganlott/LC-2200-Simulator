@@ -41,7 +41,7 @@ class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
 case class RegInfo(name:String, mem:String)
 case class MemInfo(addr:String, mem:String)
 
-object HelloStageDemo extends JFXApp {
+object LC2200Simulator extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
     width = 1024

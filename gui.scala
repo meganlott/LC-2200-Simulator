@@ -12,7 +12,7 @@ import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.image.{Image, ImageView}
-import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label}
+import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label, TextField}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 
@@ -241,6 +241,30 @@ object LC2200Simulator extends JFXApp {
     instructionSelection.layoutX = 305
     instructionSelection.layoutY = 60
     children += instructionSelection
+  
+    // first register input
+    val rxtextbox = new TextField
+    rxtextbox.promptText = "RX"
+    rxtextbox.maxWidth = 50
+    rxtextbox.layoutX = 460
+    rxtextbox.layoutY = 60
+    children += rxtextbox
+
+    // first register input
+    val rytextbox = new TextField
+    rytextbox.promptText = "RY"
+    rytextbox.maxWidth = 50
+    rytextbox.layoutX = 520
+    rytextbox.layoutY = 60
+    children += rytextbox
+
+    // first register input
+    val rztextbox = new TextField
+    rztextbox.promptText = "RZ"
+    rztextbox.maxWidth = 50
+    rztextbox.layoutX = 580
+    rztextbox.layoutY = 60
+    children += rztextbox
   }
 
   lazy val leftPane: Pane = new Pane {

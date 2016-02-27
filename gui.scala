@@ -298,32 +298,13 @@ object LC2200Simulator extends JFXApp {
       children += InputManager.topPaneInputs(i)
     }*/
 
-    val stepForward = InputManager.stepForward
-    val stepBackward = InputManager.stepBackward
-    children += stepForward
-    children += stepBackward
-
-    //instruction selection
-    val instructionSelection = InputManager.instructionSelection
-    val instructionMenu = InputManager.instructionMenu
-    val addItem = InputManager.addItem
-    children += instructionSelection
-  
-    // first register input
-    val rxtextbox = InputManager.rxtextbox
-    children += rxtextbox
-
-    // first register input
-    val rytextbox = InputManager.rytextbox
-    children += rytextbox
-
-    // first register input
-    val rztextbox = InputManager.rztextbox 
-    children += rztextbox
-
-    // execute instruction button
-    val execute = InputManager.execute
-    children += execute
+    children += InputManager.stepForward
+    children += InputManager.stepBackward
+    children += InputManager.instructionSelection
+    children += InputManager.rxtextbox
+    children += InputManager.rytextbox
+    children += InputManager.rztextbox
+    children += InputManager.execute
   }
 
   lazy val leftPane: Pane = new Pane {

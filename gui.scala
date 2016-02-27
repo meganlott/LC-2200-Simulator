@@ -42,6 +42,77 @@ class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
 case class RegInfo(name:String, mem:String)
 case class MemInfo(addr:String, mem:String)
 
+object InputManager {
+//Top panel input
+  //Forward button
+  val stepForward = new Button("Step Forward")
+    stepForward.setTooltip(
+    new Tooltip("Simulates one clock cycle.")
+    );
+    stepForward.layoutX = 150
+    stepForward.layoutY = 60
+    stepForward.setMinWidth(120)
+  //Backwards button
+  val stepBackward = new Button("Step Backward")
+    stepBackward.setTooltip(
+    new Tooltip("Moves back one clock cycle.")
+    );
+    stepBackward.layoutX = 20
+    stepBackward.layoutY = 60
+    stepBackward.setMinWidth(120)
+  // Instruction drop down menu
+  val instructionSelection = new MenuBar
+  val instructionMenu = new Menu("Choose Instruction")
+  //These need to be dynamically created from the file system
+  val addItem = new MenuItem("Add")
+
+  //Set up selection menu
+  instructionMenu.items = List(addItem)
+  instructionSelection.menus = List(instructionMenu)
+  instructionSelection.layoutX = 305
+  instructionSelection.layoutY = 60
+  
+  // first register input
+  val rxtextbox = new TextField
+    rxtextbox.promptText = "RX"
+    rxtextbox.setTooltip(
+    new Tooltip("Enter a register.")
+    );
+    rxtextbox.maxWidth = 50
+    rxtextbox.layoutX = 460
+    rxtextbox.layoutY = 60
+
+  // second register input
+  val rytextbox = new TextField
+    rytextbox.promptText = "RY"
+    rytextbox.setTooltip(
+    new Tooltip("Enter a register.")
+    );
+    rytextbox.maxWidth = 50
+    rytextbox.layoutX = 520
+    rytextbox.layoutY = 60
+
+ // third register input
+  val rztextbox = new TextField
+    rztextbox.promptText = "RZ"
+    rztextbox.setTooltip(
+    new Tooltip("Enter a register or numerical value up to (range?)")
+    );
+    rztextbox.maxWidth = 50
+    rztextbox.layoutX = 580
+    rztextbox.layoutY = 60
+
+  // execute instruction button
+  val execute = new Button("Execute")
+    execute.setTooltip(
+    new Tooltip("Simulates the execution of an entire instruction.")
+    );
+    execute.layoutX = 650
+    execute.layoutY = 60
+    execute.setMinWidth(120)
+  val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, rxtextbox, rytextbox, rxtextbox, execute)
+}
+
 object LC2200Simulator extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
@@ -222,74 +293,36 @@ object LC2200Simulator extends JFXApp {
     title.style = "-fx-font-size: 36pt"
     children += title
 
-    val stepForward = new Button("Step Forward")
-    stepForward.setTooltip(
-    new Tooltip("Simulates one clock cycle.")
-    );
-    stepForward.layoutX = 150
-    stepForward.layoutY = 60
-    stepForward.setMinWidth(120)
+    // I would like something like this but I can't get it to work
+    /*for ( i <- 0 to InputManager.topPaneInputs.length) {
+      children += InputManager.topPaneInputs(i)
+    }*/
+
+    val stepForward = InputManager.stepForward
+    val stepBackward = InputManager.stepBackward
     children += stepForward
-    val stepBackward = new Button("Step Backward")
-    stepBackward.setTooltip(
-    new Tooltip("Moves back one clock cycle.")
-    );
-    stepBackward.layoutX = 20
-    stepBackward.layoutY = 60
-    stepBackward.setMinWidth(120)
     children += stepBackward
 
     //instruction selection
-    val instructionSelection = new MenuBar
-    val instructionMenu = new Menu("Choose Instruction")
-    val addItem = new MenuItem("Add")
-    instructionMenu.items = List(addItem)
-    instructionSelection.menus = List(instructionMenu)
-    instructionSelection.layoutX = 305
-    instructionSelection.layoutY = 60
+    val instructionSelection = InputManager.instructionSelection
+    val instructionMenu = InputManager.instructionMenu
+    val addItem = InputManager.addItem
     children += instructionSelection
   
     // first register input
-    val rxtextbox = new TextField
-    rxtextbox.promptText = "RX"
-    rxtextbox.setTooltip(
-    new Tooltip("Enter a register.")
-    );
-    rxtextbox.maxWidth = 50
-    rxtextbox.layoutX = 460
-    rxtextbox.layoutY = 60
+    val rxtextbox = InputManager.rxtextbox
     children += rxtextbox
 
     // first register input
-    val rytextbox = new TextField
-    rytextbox.promptText = "RY"
-    rytextbox.setTooltip(
-    new Tooltip("Enter a register.")
-    );
-    rytextbox.maxWidth = 50
-    rytextbox.layoutX = 520
-    rytextbox.layoutY = 60
+    val rytextbox = InputManager.rytextbox
     children += rytextbox
 
     // first register input
-    val rztextbox = new TextField
-    rztextbox.promptText = "RZ"
-    rztextbox.setTooltip(
-    new Tooltip("Enter a register or numerical value up to (range?)")
-    );
-    rztextbox.maxWidth = 50
-    rztextbox.layoutX = 580
-    rztextbox.layoutY = 60
+    val rztextbox = InputManager.rztextbox 
     children += rztextbox
 
     // execute instruction button
-    val execute = new Button("Execute")
-    execute.setTooltip(
-    new Tooltip("Simulates the execution of an entire instruction.")
-    );
-    execute.layoutX = 650
-    execute.layoutY = 60
-    execute.setMinWidth(120)
+    val execute = InputManager.execute
     children += execute
   }
 

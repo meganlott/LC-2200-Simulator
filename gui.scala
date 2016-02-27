@@ -11,6 +11,7 @@ import scalafx.scene.paint._
 import scalafx.scene.text._
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
+import javafx.scene.control.Tooltip
 import javafx.scene.image.{Image, ImageView}
 import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label, TextField}
 import scalafx.collections.ObservableBuffer
@@ -222,11 +223,17 @@ object LC2200Simulator extends JFXApp {
     children += title
 
     val stepForward = new Button("Step Forward")
+    stepForward.setTooltip(
+    new Tooltip("Simulates one clock cycle.")
+    );
     stepForward.layoutX = 150
     stepForward.layoutY = 60
     stepForward.setMinWidth(120)
     children += stepForward
     val stepBackward = new Button("Step Backward")
+    stepBackward.setTooltip(
+    new Tooltip("Moves back one clock cycle.")
+    );
     stepBackward.layoutX = 20
     stepBackward.layoutY = 60
     stepBackward.setMinWidth(120)
@@ -245,6 +252,9 @@ object LC2200Simulator extends JFXApp {
     // first register input
     val rxtextbox = new TextField
     rxtextbox.promptText = "RX"
+    rxtextbox.setTooltip(
+    new Tooltip("Enter a register.")
+    );
     rxtextbox.maxWidth = 50
     rxtextbox.layoutX = 460
     rxtextbox.layoutY = 60
@@ -253,6 +263,9 @@ object LC2200Simulator extends JFXApp {
     // first register input
     val rytextbox = new TextField
     rytextbox.promptText = "RY"
+    rytextbox.setTooltip(
+    new Tooltip("Enter a register.")
+    );
     rytextbox.maxWidth = 50
     rytextbox.layoutX = 520
     rytextbox.layoutY = 60
@@ -261,10 +274,23 @@ object LC2200Simulator extends JFXApp {
     // first register input
     val rztextbox = new TextField
     rztextbox.promptText = "RZ"
+    rztextbox.setTooltip(
+    new Tooltip("Enter a register or numerical value up to (range?)")
+    );
     rztextbox.maxWidth = 50
     rztextbox.layoutX = 580
     rztextbox.layoutY = 60
     children += rztextbox
+
+    // execute instruction button
+    val execute = new Button("Execute")
+    execute.setTooltip(
+    new Tooltip("Simulates the execution of an entire instruction.")
+    );
+    execute.layoutX = 650
+    execute.layoutY = 60
+    execute.setMinWidth(120)
+    children += execute
   }
 
   lazy val leftPane: Pane = new Pane {

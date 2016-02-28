@@ -131,6 +131,100 @@ object InputManager {
     execute.layoutY = 60
     execute.setMinWidth(120)
   val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, rxtextbox, rytextbox, rxtextbox, execute)
+
+//Left panel inputs
+  val scrollpane1 : ScrollPane = new ScrollPane 
+    val regData = new ObservableBuffer[RegInfo]()
+    regData.addAll(RegInfo("R0","0x0000"),
+        RegInfo("R1","0x0001"),
+        RegInfo("R2","0x0002"),
+        RegInfo("R3","0x0003"),
+        RegInfo("R4","0x0004"),
+        RegInfo("R5","0x0005"),
+        RegInfo("R6","0x0006"),
+        RegInfo("R7","0x0007")
+        )
+    val regTable = new TableView(regData)
+    val col1 = new TableColumn[RegInfo, String]("Register")
+    col1.cellValueFactory = cdf => StringProperty(cdf.value.name)
+    val col2 = new TableColumn[RegInfo, String]("Value")
+    col2.cellValueFactory = cdf => StringProperty(cdf.value.mem)
+    regTable.columns ++= List(col1, col2)
+    scrollpane1.content = regTable
+    scrollpane1.maxHeight = 200
+    scrollpane1.maxWidth = 160
+    scrollpane1.layoutX = 20
+    scrollpane1.layoutY = 50
+    
+  val scrollpane2 : ScrollPane = new ScrollPane 
+    val memData = new ObservableBuffer[MemInfo]()
+    memData.addAll(MemInfo("0x0000","0x0000"),
+        MemInfo("0x0001","0x0001"),
+        MemInfo("0x0002","0x0002"),
+        MemInfo("0x0003","0x0003"),
+        MemInfo("0x0004","0x0004"),
+        MemInfo("0x0005","0x0005"),
+        MemInfo("0x0006","0x0006"),
+        MemInfo("0x0007","0x0007")
+        )
+
+    val memTable = new TableView(memData)
+    val col3 = new TableColumn[MemInfo, String]("Address")
+    col3.cellValueFactory = cdf => StringProperty(cdf.value.addr)
+    val col4 = new TableColumn[MemInfo, String]("Value")
+    col4.cellValueFactory = cdf => StringProperty(cdf.value.mem)
+    memTable.columns ++= List(col3, col4)
+    scrollpane2.content = memTable
+    scrollpane2.maxHeight = 200
+    scrollpane2.maxWidth = 160
+    scrollpane2.layoutX = 20
+    scrollpane2.layoutY = 280
+
+  val leftPaneInputs = Array(scrollpane1, scrollpane2)
+
+  //Functions
+  //Takes in an integer location and an integer value then updates the memory location in
+  //datapathstate and the UI
+  def updateMem(location: Int, value: Int) {
+    //TODO
+  } 
+
+  //Retreives the value currently on the screen at memory location
+  def getMemVal(location: Int) {
+    //TODO
+  }
+
+  //Takes in an integer location and an integer value then updates register location in
+  //datapathstate and the UI
+  def updateReg(location: Int, value: Int) {
+    //TODO
+  }
+
+  //Retreives the value currently on the screen at the register location
+  def getRegVal(location: Int) {
+    //TODO
+  }
+
+  //Tells the simulation manager to run an entire instruction
+  def run() {
+    //TODO
+  }
+
+  //Tells simulation manager to complete one step of an instruction
+  def stepForwardPressed() {
+    //TODO
+  }
+
+  //Tells simulation manager to go back to the previous instruction step
+  def stepBackwardPressed() {
+    //TODO
+  }
+
+  //Retreives the names of the currently avalible instructions somehow
+  def getInstructions() {
+    //TODO
+  }
+
 }
 
 object LC2200Simulator extends JFXApp {
@@ -331,71 +425,21 @@ object LC2200Simulator extends JFXApp {
   }
 
   lazy val leftPane: Pane = new Pane {
-
     val regTableLabel = new Label("Register View")
-    regTableLabel.layoutX = 20
-    regTableLabel.layoutY = 30
-    children += regTableLabel
-
-    val scrollpane1 : ScrollPane = new ScrollPane 
-    val regData = new ObservableBuffer[RegInfo]()
-    regData.addAll(RegInfo("R0","0x0000"),
-        RegInfo("R1","0x0001"),
-        RegInfo("R2","0x0002"),
-        RegInfo("R3","0x0003"),
-        RegInfo("R4","0x0004"),
-        RegInfo("R5","0x0005"),
-        RegInfo("R6","0x0006"),
-        RegInfo("R7","0x0007")
-        )
-
-    val regTable = new TableView(regData)
-
-    val col1 = new TableColumn[RegInfo, String]("Register")
-    col1.cellValueFactory = cdf => StringProperty(cdf.value.name)
-    val col2 = new TableColumn[RegInfo, String]("Value")
-    col2.cellValueFactory = cdf => StringProperty(cdf.value.mem)
-
-    regTable.columns ++= List(col1, col2)
-    scrollpane1.content = regTable
-    scrollpane1.maxHeight = 200
-    scrollpane1.maxWidth = 160
-    scrollpane1.layoutX = 20
-    scrollpane1.layoutY = 50
-    children += scrollpane1
-    
+      regTableLabel.layoutX = 20
+      regTableLabel.layoutY = 30
+      children += regTableLabel
     val memTableLabel = new Label("Memory View")
-    memTableLabel.layoutX = 20
-    memTableLabel.layoutY = 260
-    children += memTableLabel
+      memTableLabel.layoutX = 20
+      memTableLabel.layoutY = 260
+      children += memTableLabel
+
+    //Adding left pane inputs
+    children += InputManager.scrollpane1
+    children += InputManager.scrollpane2
+
     
-    val scrollpane2 : ScrollPane = new ScrollPane 
-    val memData = new ObservableBuffer[MemInfo]()
-    memData.addAll(MemInfo("0x0000","0x0000"),
-        MemInfo("0x0001","0x0001"),
-        MemInfo("0x0002","0x0002"),
-        MemInfo("0x0003","0x0003"),
-        MemInfo("0x0004","0x0004"),
-        MemInfo("0x0005","0x0005"),
-        MemInfo("0x0006","0x0006"),
-        MemInfo("0x0007","0x0007")
-        )
-
-    val memTable = new TableView(memData)
-
-    val col3 = new TableColumn[MemInfo, String]("Address")
-    col3.cellValueFactory = cdf => StringProperty(cdf.value.addr)
-    val col4 = new TableColumn[MemInfo, String]("Value")
-    col4.cellValueFactory = cdf => StringProperty(cdf.value.mem)
-
-    memTable.columns ++= List(col3, col4)
-    scrollpane2.content = memTable
-    scrollpane2.maxHeight = 200
-    scrollpane2.maxWidth = 160
-    scrollpane2.layoutX = 20
-    scrollpane2.layoutY = 280
-    children += scrollpane2
-  }
+      }
 
   def newComponent(xx: Double, yy: Double) = {
     new Rectangle {

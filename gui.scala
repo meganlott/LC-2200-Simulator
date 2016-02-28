@@ -9,6 +9,7 @@ import scalafx.scene.shape._
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint._
 import scalafx.scene.text._
+import scalafx.scene.Node
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.control.Tooltip
@@ -17,23 +18,42 @@ import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, 
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 
-class SComponent(val xx: Double, val yy: Double, val w: Double, val h: Double, val n: String) extends Rectangle{
-  x = xx;
-  y = yy;
-  width = w
-  height = h
-  fill = White
-  stroke = Black
-  strokeWidth = 2
+abstract class Component {
+  /*
+  protected var x: Double
+  protected var y: Double
+  */
+  //def getSceneComponent(): Node;
 }
 
-class Wire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) extends Line {
-  startX = sx
-  startY = sy
-  endX = ex
-  endY = ey
-  stroke = Black
-  strokeWidth = 3
+object CComponent {
+  var pane: Pane = null;
+}
+
+class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val n: String) extends Component{
+  var x = xx;
+  var y = yy;
+  val shape = Rectangle(xx, yy, w, h)
+  shape.fill = White
+  shape.stroke = Black
+  shape.strokeWidth = 2
+
+  CComponent.pane.children += shape
+
+  /*
+  def getSceneComponent(): Node = {
+    return shape
+  }
+  */
+}
+
+class Wire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) {
+
+  val shape = Line(sx, sy, ex, ey);
+  shape.stroke = Black
+  shape.strokeWidth = 3
+
+  CComponent.pane.children += shape
 }
 
 class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
@@ -140,14 +160,17 @@ object LC2200Simulator extends JFXApp {
       stroke = Black
       fill = White
     }
+
+    CComponent.pane = this;
+    
     children += r
 
-    children += new Wire(20,20,720,20);
-    children += new Wire(20,20,20,320);
-    children += new Wire(20,320,720,320);
+    new Wire(20,20,720,20);
+    new Wire(20,20,20,320);
+    new Wire(20,320,720,320);
 
-    children += new Wire(80,20,80,320);
-    children += new SComponent(60, 50, 40, 30, "PC");
+    new Wire(80,20,80,320);
+    new RectComp(60, 50, 40, 30, "PC");
     var t = new Text {
       x = 70
       y = 70
@@ -162,11 +185,11 @@ object LC2200Simulator extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
-    children += new Wire(140,20,140,120);
-    children += new Wire(190,20,190,120);
-    children += new Wire(165, 210, 165, 320)
-    children += new SComponent(120, 50, 40, 30, "A");
-    children += new SComponent(170, 50, 40, 30, "B");
+    new Wire(140,20,140,120);
+    new Wire(190,20,190,120);
+    new Wire(165, 210, 165, 320)
+    new RectComp(120, 50, 40, 30, "A");
+    new RectComp(170, 50, 40, 30, "B");
     t = new Text {
       x = 135
       y = 70
@@ -194,8 +217,8 @@ object LC2200Simulator extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
-    children += new Wire(280,20,280,320);
-    children += new SComponent(240, 120, 80, 100, "registers");
+    new Wire(280,20,280,320);
+    new RectComp(240, 120, 80, 100, "registers");
     t = new Text {
       x = 247
       y = 150
@@ -210,9 +233,9 @@ object LC2200Simulator extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
-    children += new Wire(380,20,380,140);
-    children += new Wire(420,20,420,140);
-    children += new SComponent(360, 50, 40, 30, "MAR");
+    new Wire(380,20,380,140);
+    new Wire(420,20,420,140);
+    new RectComp(360, 50, 40, 30, "MAR");
     t = new Text {
       x = 363
       y = 70
@@ -221,8 +244,8 @@ object LC2200Simulator extends JFXApp {
       fill = Black
     }
     children += t
-    children += new Wire(400,160,400,320);
-    children += new SComponent(360, 120, 80, 100, "memory");
+    new Wire(400,160,400,320);
+    new RectComp(360, 120, 80, 100, "memory");
     t = new Text {
       x = 367
       y = 150
@@ -237,8 +260,8 @@ object LC2200Simulator extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
-    children += new Wire(490,20,490,120);
-    children += new SComponent(470, 50, 40, 30, "IR");
+    new Wire(490,20,490,120);
+    new RectComp(470, 50, 40, 30, "IR");
     t = new Text {
       x = 482
       y = 70
@@ -247,8 +270,8 @@ object LC2200Simulator extends JFXApp {
       fill = Black
     }
     children += t
-    children += new Wire(120,320,120,460);
-    children += new SComponent(100, 360, 40, 30, "=0?");
+    new Wire(120,320,120,460);
+    new RectComp(100, 360, 40, 30, "=0?");
     t = new Text {
       x = 105
       y = 380
@@ -258,8 +281,8 @@ object LC2200Simulator extends JFXApp {
     }
     children += t
 
-    children += new Wire(510,180,510,320);
-    children += new SComponent(480, 200, 60, 40, "sign");
+    new Wire(510,180,510,320);
+    new RectComp(480, 200, 60, 40, "sign");
     t = new Text {
       x = 487
       y = 215
@@ -268,7 +291,7 @@ object LC2200Simulator extends JFXApp {
     }
     children += t
       
-    children += new SComponent(100, 410, 40, 30, "Z");
+    new RectComp(100, 410, 40, 30, "Z");
     t = new Text {
       x = 115
       y = 430

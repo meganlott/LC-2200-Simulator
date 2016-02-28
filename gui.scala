@@ -14,6 +14,7 @@ import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
 import javafx.scene.control.Tooltip
 import javafx.scene.image.{Image, ImageView}
+import scalafx.event.ActionEvent
 import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label, TextField}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
@@ -72,6 +73,10 @@ object InputManager {
     stepForward.layoutX = 150
     stepForward.layoutY = 60
     stepForward.setMinWidth(120)
+    stepForward.onAction = (e:ActionEvent) => {
+      stepForwardPressed()
+    }
+
   //Backwards button
   val stepBackward = new Button("Step Backward")
     stepBackward.setTooltip(
@@ -80,6 +85,10 @@ object InputManager {
     stepBackward.layoutX = 20
     stepBackward.layoutY = 60
     stepBackward.setMinWidth(120)
+    stepBackward.onAction = (e:ActionEvent) => {
+      stepBackwardPressed()
+    }
+
   // Instruction drop down menu
   val instructionSelection = new MenuBar
   val instructionMenu = new Menu("Choose Instruction")
@@ -130,6 +139,9 @@ object InputManager {
     execute.layoutX = 650
     execute.layoutY = 60
     execute.setMinWidth(120)
+    execute.onAction = (e:ActionEvent) => {
+      run()
+    }
   val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, rxtextbox, rytextbox, rxtextbox, execute)
 
 //Left panel inputs
@@ -208,16 +220,19 @@ object InputManager {
   //Tells the simulation manager to run an entire instruction
   def run() {
     //TODO
+    println("Exectute pressed")
   }
 
   //Tells simulation manager to complete one step of an instruction
   def stepForwardPressed() {
     //TODO
+    println("step forward pressed")
   }
 
   //Tells simulation manager to go back to the previous instruction step
   def stepBackwardPressed() {
     //TODO
+    println("step backward pressed")
   }
 
   //Retreives the names of the currently avalible instructions somehow

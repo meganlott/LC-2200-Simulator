@@ -496,5 +496,8 @@ object LC2200Simulator extends JFXApp {
     stepForward.layoutY = 50
   }
   stage.getIcons().add(new Image("file:CPU.png"))
+  
+  val loader = new JsonLoader()
+  loader.loadFile("add.json")
 }
 

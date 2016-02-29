@@ -38,7 +38,18 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   shape.stroke = Black
   shape.strokeWidth = 2
 
+  var text = new Text {
+    x = xx + 10
+    y = yy + 20
+    text = n
+    style = "-fx-font-size: 12pt"
+    fill = Black
+  }
+
   CComponent.pane.children += shape
+  CComponent.pane.children += text
+
+  text.text = "HELLO";
 
   /*
   def getSceneComponent(): Node = {

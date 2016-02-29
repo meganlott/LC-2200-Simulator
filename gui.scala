@@ -18,12 +18,21 @@ import scalafx.event.ActionEvent
 import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label, TextField}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
+import scala.collection.mutable.ArrayBuffer
 
 abstract class Component {
-  /*
-  protected var x: Double
-  protected var y: Double
-  */
+
+  protected var inWire: Wire = null;
+  protected var outWire: Wire = null;
+
+  def readInputData(): Double = {
+    return inWire.value;
+  }
+
+  def setOutputData(data: Double) {
+    outWire.setValue(data)
+  }
+  
   //def getSceneComponent(): Node;
 }
 
@@ -40,7 +49,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   shape.strokeWidth = 2
 
   var text = new Text {
-    x = xx + 10
+    x = xx + 8
     y = yy + 20
     text = n
     style = "-fx-font-size: 12pt"
@@ -49,9 +58,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
 
   CComponent.pane.children += shape
   CComponent.pane.children += text
-
-  text.text = "HELLO";
-
+  
   /*
   def getSceneComponent(): Node = {
     return shape
@@ -59,13 +66,46 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   */
 }
 
-class Wire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) {
+abstract class Wire() {
+
+  var value: Double
+
+  def setValue(value: Double)
+  def getValue(): Double = {
+    return value
+  }
+}
+
+class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) extends Wire {
 
   val shape = Line(sx, sy, ex, ey);
   shape.stroke = Black
   shape.strokeWidth = 3
 
+  var value: Double = 0;
+
   CComponent.pane.children += shape
+
+  def setValue(value: Double) = {
+    this.value = value;
+  }
+}
+
+class WireSet() extends Wire{
+  val wires = new ArrayBuffer[Wire]();
+
+  var value: Double = 0;
+
+  def setValue(value: Double) = {
+    for (wire <- wires) {
+      wire.setValue(value);
+    }
+  }
+
+  def add(wire: Wire): Wire = {
+    wires.append(wire)
+    return wire
+  }
 }
 
 class TBuffer(val xx: Double, val yy: Double, val n: String) extends Polygon {
@@ -309,141 +349,66 @@ object LC2200Simulator extends JFXApp {
     
     children += r
 
-    new Wire(20,20,720,20);
-    new Wire(20,20,20,320);
-    new Wire(20,320,720,320);
+    val bus = new WireSet()
 
-    new Wire(80,20,80,320);
+    bus.add(new RealWire(20,20,720,20))
+    bus.add(new RealWire(20,20,20,320))
+    bus.add(new RealWire(20,320,720,320))
+
+    bus.add(new RealWire(80,20,80,55))
+
     new RectComp(60, 50, 40, 30, "PC");
-    var t = new Text {
-      x = 70
-      y = 70
-      text = "PC"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
+
     var poly = Polygon(65,270,95,270,80,300);
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
 
-    new Wire(140,20,140,120);
-    new Wire(190,20,190,120);
-    new Wire(165, 210, 165, 320)
+    new RealWire(140,20,140,120)
+    new RealWire(190,20,190,120)
+    new RealWire(165, 210, 165, 320)
     new RectComp(120, 50, 40, 30, "A");
     new RectComp(170, 50, 40, 30, "B");
-    t = new Text {
-      x = 135
-      y = 70
-      text = "A         B"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
     poly = Polygon(120,120, 160,120, 165,130, 170,120, 210,120, 190, 210, 140, 210);
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
-    t = new Text {
-      x = 150
-      y = 160
-      text = "ALU"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
     poly = Polygon(150,270,180,270,165,300)
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
 
-    new Wire(280,20,280,320);
+    new RealWire(280,20,280,320);
     new RectComp(240, 120, 80, 100, "registers");
-    t = new Text {
-      x = 247
-      y = 150
-      text = "registers\n16 x\n32 bits"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
     poly = Polygon(265,270,295,270,280,300);
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
 
-    new Wire(380,20,380,140);
-    new Wire(420,20,420,140);
+    new RealWire(380,20,380,140);
+    new RealWire(420,20,420,140);
     new RectComp(360, 50, 40, 30, "MAR");
-    t = new Text {
-      x = 363
-      y = 70
-      text = "MAR"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
-    new Wire(400,160,400,320);
-    new RectComp(360, 120, 80, 100, "memory");
-    t = new Text {
-      x = 367
-      y = 150
-      text = "memory\n2^32 x\n32 bits"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
+    new RealWire(400,160,400,320);
+    new RectComp(360, 120, 80, 100, "memory\n2^32 x\n32 bits");
     poly = Polygon(385,270,415,270,400,300);
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
 
-    new Wire(490,20,490,120);
+    new RealWire(490,20,490,120);
     new RectComp(470, 50, 40, 30, "IR");
-    t = new Text {
-      x = 482
-      y = 70
-      text = "IR"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
-    new Wire(120,320,120,460);
+    new RealWire(120,320,120,460);
     new RectComp(100, 360, 40, 30, "=0?");
-    t = new Text {
-      x = 105
-      y = 380
-      text = "=0?"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
 
-    new Wire(510,180,510,320);
-    new RectComp(480, 200, 60, 40, "sign");
-    t = new Text {
-      x = 487
-      y = 215
-      text = "sign\nextend"
-      fill = Black
-    }
-    children += t
+    new RealWire(510,180,510,320);
+    new RectComp(480, 200, 60, 40, "sign\nextend");
       
     new RectComp(100, 410, 40, 30, "Z");
-    t = new Text {
-      x = 115
-      y = 430
-      text = "Z"
-      style = "-fx-font-size: 12pt"
-      fill = Black
-    }
-    children += t
     
     poly = Polygon(495,270,525,270,510,300);
     poly.fill = White

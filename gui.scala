@@ -93,6 +93,7 @@ object InputManager {
   val instructionSelection = new MenuBar
   val instructionMenu = new Menu("Choose Instruction")
   //These need to be dynamically created from the file system
+  //TODO
   val addItem = new MenuItem("Add")
 
   //Set up selection menu
@@ -195,32 +196,55 @@ object InputManager {
   val leftPaneInputs = Array(scrollpane1, scrollpane2)
 
   //Functions
-  //Takes in an integer location and an integer value then updates the memory location in
+
+  //Takes in an integer value and formats it for the UI
+  def formatInt( i: Int) : String = {
+      val hexstring = Integer.toHexString(i)
+      var formatedString = "0x"
+      while (formatedString.length() < (6 - hexstring.length())) {
+        formatedString += "0"
+     }
+      return formatedString + hexstring
+    }
+
+//Takes in an integer location and an integer value then updates the memory location in
   //datapathstate and the UI
   def updateMem(location: Int, value: Int) {
-    //TODO
+
+    memData(location) = MemInfo(formatInt(location), formatInt(value))
   } 
 
   //Retreives the value currently on the screen at memory location
-  def getMemVal(location: Int) {
-    //TODO
+  def getMemVal(location: Int) : Int = {
+    var value = memData(location).mem
+    return convertHexString(value)
   }
 
   //Takes in an integer location and an integer value then updates register location in
   //datapathstate and the UI
   def updateReg(location: Int, value: Int) {
-    //TODO
+    regData(location) = RegInfo(formatInt(location), formatInt(value))
   }
 
   //Retreives the value currently on the screen at the register location
-  def getRegVal(location: Int) {
-    //TODO
+  def getRegVal(location: Int) : Int  =  {
+    var value = regData(location).mem
+    return convertHexString(value)
+  }
+
+  //Parse UI string value
+  def convertHexString(str: String) : Int = {
+    val l = str.length()
+    var sub = str.substring(2, str.length() )
+    return Integer.parseInt(sub, 16)
   }
 
   //Tells the simulation manager to run an entire instruction
   def run() {
     //TODO
     println("Exectute pressed")
+    updateMem(3,55)
+    println( getMemVal(3) )
   }
 
   //Tells simulation manager to complete one step of an instruction

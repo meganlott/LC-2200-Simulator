@@ -22,28 +22,114 @@ import scala.collection.mutable.ArrayBuffer
 
 abstract class Component {
 
-  protected var inWire: Wire = null;
-  protected var outWire: Wire = null;
+  val name: String
 
-  def readInputData(): Double = {
-    return inWire.value;
+  var activator: Activator = null
+
+  var inputs: Int = 1
+
+  protected var inWires: Array[Wire] = new Array[Wire](1)
+  var outWire: Wire = null;
+
+  def readInputData(): Array[Short] = {
+    var data = new Array[Short](inputs)
+    for (i <- 0 until inputs) {
+      data(i) = inWires(i).value
+    }
+    return data;
   }
 
-  def setOutputData(data: Double) {
+  def setOutputData(data: Short) {
     outWire.setValue(data)
   }
+
+  def setNumberOfInputs(num: Int) {
+    inputs = num;
+    inWires = new Array[Wire](num)
+  }
+
+  def getInputLocation(input: Int = 0): (Double, Double)
+  def getOutputLocation(): (Double, Double)
+
+  def inputToBus(input: Int = 0) {
+    val loc = getInputLocation(input)
+    inWires(input) = new RealWire(loc._1, DataPath.busTop, loc._1, loc._2)
+    DataPath.bus.add(inWires(input))
+  }
+
+  def inputToComponent(c: Component, input: Int = 0) {
+    val loc1 = c.getOutputLocation()
+    val loc2 = getInputLocation(input)
+    val newWire = new RealWire(loc1._1, loc1._2, loc2._1, loc2._2)
+    inWires(input) = newWire
+    c.outWire = newWire
+  }
+
+  def createActivator(n: String, dir: Int)
   
+  def addActivator(a: Activator) {
+    activator = a
+    DataPath.addActivator(a)
+  }
   //def getSceneComponent(): Node;
 }
 
-object CComponent {
+class Activator(val xx: Double, val yy: Double, val n: String, val s: Component, val flip: Int = 0) {
+  val name = n;
+  val source = s;
+  var offset = 0
+  if (flip != 0) {
+    offset = flip * 16;
+    val shape = Line(xx + offset, yy, xx, yy)
+    shape.stroke = Black
+    shape.strokeWidth = 1
+    DataPath.pane.children += shape
+  }
+  
+  var text = new Text {
+    x = xx + offset
+    y = yy
+    text = name
+    style = "-fx-font-size: 8pt"
+    fill = Black
+  }
+  DataPath.pane.children += text
+
+  def activate(): Array[Short] = {
+    return source.readInputData()
+  }
+}
+
+object DataPath {
+
+  val busTop = 20;
+  val busBottom = 320;
+
   var pane: Pane = null;
+
+  var components: Map[String, Component] = Map()
+  var activators: Map[String, Activator] = Map()
+
+  val bus: WireSet = new WireSet()
+
+  def activate(s: String): Array[Short] = {
+    return activators(s).activate()
+  }
+
+  def addActivator(a: Activator) {
+    activators += (a.name -> a)
+  }
+
+  def addComponent(c: Component) {
+    components += (c.name -> c)
+  }
 }
 
 class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val n: String) extends Component{
   var x = xx;
   var y = yy;
   val shape = Rectangle(xx, yy, w, h)
+  val name = n;
   shape.fill = White
   shape.stroke = Black
   shape.strokeWidth = 2
@@ -51,27 +137,40 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   var text = new Text {
     x = xx + 8
     y = yy + 20
-    text = n
+    text = name
     style = "-fx-font-size: 12pt"
     fill = Black
   }
 
-  CComponent.pane.children += shape
-  CComponent.pane.children += text
-  
-  /*
-  def getSceneComponent(): Node = {
-    return shape
+  DataPath.pane.children += shape
+  DataPath.pane.children += text
+  DataPath.addComponent(this)
+
+  def getInputLocation(input: Int): (Double, Double) = {
+    var step = w / (inputs + 1)
+    return (x + step * (input+1), y)
   }
-  */
+
+  def getOutputLocation(): (Double, Double) = {
+    return (x + w / 2, y + h)
+  }
+
+  def createActivator(n: String, dir: Int) {
+    var sx = x
+    if (dir > 0) {
+      sx = x + w
+    }
+    var a = new Activator(sx, y+20, n, this, dir)
+    addActivator(a)
+  }
 }
 
 abstract class Wire() {
 
-  var value: Double
+  var value: Short = 0;
 
-  def setValue(value: Double)
-  def getValue(): Double = {
+  def setValue(value: Short)
+  def getValue(): Short = {
     return value
   }
 }
@@ -82,11 +181,9 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
   shape.stroke = Black
   shape.strokeWidth = 3
 
-  var value: Double = 0;
+  DataPath.pane.children += shape
 
-  CComponent.pane.children += shape
-
-  def setValue(value: Double) = {
+  def setValue(value: Short) = {
     this.value = value;
   }
 }
@@ -94,15 +191,14 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
 class WireSet() extends Wire{
   val wires = new ArrayBuffer[Wire]();
 
-  var value: Double = 0;
-
-  def setValue(value: Double) = {
+  def setValue(v: Short) = {
     for (wire <- wires) {
-      wire.setValue(value);
+      wire.setValue(v);
     }
   }
 
   def add(wire: Wire): Wire = {
+    wire.setValue(value)
     wires.append(wire)
     return wire
   }
@@ -345,19 +441,18 @@ object LC2200Simulator extends JFXApp {
       fill = White
     }
 
-    CComponent.pane = this;
+    DataPath.pane = this;
     
     children += r
 
-    val bus = new WireSet()
+    DataPath.bus.add(new RealWire(20,20,720,20))
+    DataPath.bus.add(new RealWire(20,20,20,320))
+    DataPath.bus.add(new RealWire(20,320,720,320))
 
-    bus.add(new RealWire(20,20,720,20))
-    bus.add(new RealWire(20,20,20,320))
-    bus.add(new RealWire(20,320,720,320))
 
-    bus.add(new RealWire(80,20,80,55))
-
-    new RectComp(60, 50, 40, 30, "PC");
+    val pc = new RectComp(60, 50, 40, 30, "PC");
+    pc.inputToBus(0)
+    pc.createActivator("LdPC", -1)
 
     var poly = Polygon(65,270,95,270,80,300);
     poly.fill = White
@@ -365,23 +460,28 @@ object LC2200Simulator extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
-    new RealWire(140,20,140,120)
-    new RealWire(190,20,190,120)
-    new RealWire(165, 210, 165, 320)
-    new RectComp(120, 50, 40, 30, "A");
-    new RectComp(170, 50, 40, 30, "B");
+    val aBox = new RectComp(120, 50, 40, 30, "A");
+    aBox.inputToBus()
+    val bBox = new RectComp(170, 50, 40, 30, "B");
+    bBox.inputToBus()
+
+    val alu = new RectComp(120, 120, 90, 90, "ALU")
+    alu.setNumberOfInputs(2)
+    alu.inputToComponent(aBox, 0)
+    alu.inputToComponent(bBox, 1)
+    /*
     poly = Polygon(120,120, 160,120, 165,130, 170,120, 210,120, 190, 210, 140, 210);
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
+    */
     poly = Polygon(150,270,180,270,165,300)
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
 
-    new RealWire(280,20,280,320);
     new RectComp(240, 120, 80, 100, "registers");
     poly = Polygon(265,270,295,270,280,300);
     poly.fill = White
@@ -389,23 +489,21 @@ object LC2200Simulator extends JFXApp {
     poly.strokeWidth = 2
     children += poly;
 
-    new RealWire(380,20,380,140);
-    new RealWire(420,20,420,140);
-    new RectComp(360, 50, 40, 30, "MAR");
-    new RealWire(400,160,400,320);
-    new RectComp(360, 120, 80, 100, "memory\n2^32 x\n32 bits");
+    val mar = new RectComp(360, 50, 40, 30, "MAR");
+    mar.inputToBus(0)
+    val mem = new RectComp(360, 120, 80, 100, "memory\n2^32 x\n32 bits");
+    mem.setNumberOfInputs(2)
+    mem.inputToBus(1)
+    mem.inputToComponent(mar, 0)
     poly = Polygon(385,270,415,270,400,300);
     poly.fill = White
     poly.stroke = Black
     poly.strokeWidth = 2
     children += poly;
 
-    new RealWire(490,20,490,120);
     new RectComp(470, 50, 40, 30, "IR");
-    new RealWire(120,320,120,460);
     new RectComp(100, 360, 40, 30, "=0?");
 
-    new RealWire(510,180,510,320);
     new RectComp(480, 200, 60, 40, "sign\nextend");
       
     new RectComp(100, 410, 40, 30, "Z");

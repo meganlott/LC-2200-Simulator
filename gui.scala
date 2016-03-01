@@ -239,12 +239,20 @@ object InputManager {
   // Instruction drop down menu
   val instructionSelection = new MenuBar
   val instructionMenu = new Menu("Choose Instruction")
+  var instructionMenuItemList = List[MenuItem]()
   //These need to be dynamically created from the file system
   //TODO
-  val addItem = new MenuItem("Add")
+  val loader = new JsonLoader()
+  val instructions = loader.getInstructions() //get all instructions available
+  for(instr <- instructions) {
+    ///create menu item
+    val newItem = new MenuItem(instr.name)
+    //add to list
+    instructionMenuItemList = instructionMenuItemList ::: List(newItem)
+  }
 
   //Set up selection menu
-  instructionMenu.items = List(addItem)
+  instructionMenu.items = instructionMenuItemList
   instructionSelection.menus = List(instructionMenu)
   instructionSelection.layoutX = 305
   instructionSelection.layoutY = 60

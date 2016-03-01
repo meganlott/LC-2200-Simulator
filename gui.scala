@@ -240,8 +240,8 @@ object InputManager {
   val instructionSelection = new MenuBar
   val instructionMenu = new Menu("Choose Instruction")
   var instructionMenuItemList = List[MenuItem]()
-  //These need to be dynamically created from the file system
-  //TODO
+
+  //Dynamically update names based on the file system
   val loader = new JsonLoader()
   val instructions = loader.getInstructions() //get all instructions available
   for(instr <- instructions) {
@@ -251,11 +251,12 @@ object InputManager {
     instructionMenuItemList = instructionMenuItemList ::: List(newItem)
   }
 
+  //TODO Make these locations relative to the size of the screen
   //Set up selection menu
   instructionMenu.items = instructionMenuItemList
   instructionSelection.menus = List(instructionMenu)
-  instructionSelection.layoutX = 305
-  instructionSelection.layoutY = 60
+  instructionSelection.layoutX = 300
+  instructionSelection.layoutY = 58
   
   // first register input
   val rxtextbox = new TextField
@@ -264,7 +265,7 @@ object InputManager {
     new Tooltip("Enter a register.")
     );
     rxtextbox.maxWidth = 50
-    rxtextbox.layoutX = 460
+    rxtextbox.layoutX = 470
     rxtextbox.layoutY = 60
 
   // second register input
@@ -274,7 +275,7 @@ object InputManager {
     new Tooltip("Enter a register.")
     );
     rytextbox.maxWidth = 50
-    rytextbox.layoutX = 520
+    rytextbox.layoutX = 530
     rytextbox.layoutY = 60
 
  // third register input
@@ -284,7 +285,7 @@ object InputManager {
     new Tooltip("Enter a register or numerical value up to (range?)")
     );
     rztextbox.maxWidth = 50
-    rztextbox.layoutX = 580
+    rztextbox.layoutX = 590
     rztextbox.layoutY = 60
 
   // execute instruction button
@@ -292,7 +293,7 @@ object InputManager {
     execute.setTooltip(
     new Tooltip("Simulates the execution of an entire instruction.")
     );
-    execute.layoutX = 650
+    execute.layoutX = 655
     execute.layoutY = 60
     execute.setMinWidth(120)
     execute.onAction = (e:ActionEvent) => {
@@ -378,7 +379,7 @@ object InputManager {
   //Takes in an integer location and an integer value then updates register location in
   //datapathstate and the UI
   def updateReg(location: Int, value: Int) {
-    regData(location) = RegInfo(formatInt(location), formatInt(value))
+    regData(location) = RegInfo("R" + location.toString(), formatInt(value))
   }
 
   //Retreives the value currently on the screen at the register location
@@ -414,11 +415,10 @@ object InputManager {
     println("step backward pressed")
   }
 
-  //Retreives the names of the currently avalible instructions somehow
-  def getInstructions() {
+  //Retreives the name of the instruction currently selected in the instruction menu selection
+  def getSelectedInstruction() {
     //TODO
   }
-
 }
 
 object LC2200Simulator extends JFXApp {

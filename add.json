@@ -1,3 +1,17 @@
 {
-    "instruction" : 'add'
+    "instruction" : "add",
+    "steps" : [ {
+        "loada" : true,
+        "drreg" : true
+    },
+    {
+        "loadb" : true,
+        "drreg" : true
+    },
+    {
+        "alufunc" : "add",
+        "dralu" : true,
+        "wrreg" : true
+    }
+    ]
 }

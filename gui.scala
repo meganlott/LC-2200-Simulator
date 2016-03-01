@@ -496,8 +496,32 @@ object LC2200Simulator extends JFXApp {
     stepForward.layoutY = 50
   }
   stage.getIcons().add(new Image("file:CPU.png"))
-  
+ 
+  /*
+   * EXAMPLE CODE USAGE HERE!!!!
+   * Here I make a JsonLoader and get back the instructions.
+   */
   val loader = new JsonLoader()
-  loader.loadFile("add.json")
+  val instructions = loader.getInstructions() //get all instructions available
+  var addInstr : Instruction = _
+  //find add instruction
+  var instr : Instruction = _
+  for(instr <- instructions) {
+    if(instr.name.compare("add") == 0) {
+      addInstr = instr
+      //No break in scala :(
+    }
+  }
+  var step = addInstr.getSignals(0) //get all signals for step 0 of add
+  for(i <- 0 to step.length-1 by 2) {
+    //If the signal isn't ""
+    if(step(i+1).compare("") != 0) {
+      System.out.println(step(i)) //print sigal name
+      System.out.println(step(i+1)) //print signal value
+    }
+  }
+  /*
+   * End Example JsonLoader Code here!
+   */
 }
 

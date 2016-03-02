@@ -302,7 +302,8 @@ object InputManager {
 
   // Instruction drop down menu
   val instructionSelection = new MenuBar
-  val instructionMenu = new Menu("Choose Instruction")
+  //val instructionMenu = new Menu("Choose Instruction")
+  val instructionMenu = new Menu("Add")
   var instructionMenuItemList = List[MenuItem]()
 
   //Dynamically update names based on the file system
@@ -411,9 +412,56 @@ object InputManager {
     scrollpane2.maxHeight = 200
     scrollpane2.maxWidth = 160
     scrollpane2.layoutX = 20
-    scrollpane2.layoutY = 280
+    scrollpane2.layoutY = 380
 
-  val leftPaneInputs = Array(scrollpane1, scrollpane2)
+ // reg edit input
+  val regAddrBox = new TextField
+  regAddrBox.promptText = "Which Register"
+  regAddrBox.setTooltip(new Tooltip("Enter an address to set register value"));
+  regAddrBox.maxWidth = 100
+  regAddrBox.layoutX = 20
+  regAddrBox.layoutY = 260
+  val regValBox = new TextField
+  regValBox.promptText = "Value"
+  regValBox.setTooltip(new Tooltip("Enter a value to set register value"));
+  regValBox.maxWidth = 100
+  regValBox.layoutX = 20
+  regValBox.layoutY = 290
+  // set reg button
+  val setReg = new Button("Set Reg")
+  setReg.setTooltip(new Tooltip("Set register value."));
+  setReg.layoutX = 20
+  setReg.layoutY = 320
+  setReg.setMinWidth(120)
+  setReg.onAction = (e:ActionEvent) => {
+    updateReg(Integer.parseInt(regAddrBox.text(), 16), Integer.parseInt(regValBox.text(), 16))
+  }
+
+ // mem edit input
+  val memAddrBox = new TextField
+  memAddrBox.promptText = "Address"
+  memAddrBox.setTooltip(new Tooltip("Enter an address to set memory value"));
+  memAddrBox.maxWidth = 100
+  memAddrBox.layoutX = 20
+  memAddrBox.layoutY = 590
+  val memValBox = new TextField
+  memValBox.promptText = "Value"
+  memValBox.setTooltip(new Tooltip("Enter a value to set memory value"));
+  memValBox.maxWidth = 100
+  memValBox.layoutX = 20
+  memValBox.layoutY = 620
+  // set mem button
+  val setMem = new Button("Set Mem")
+  setMem.setTooltip(new Tooltip("Set memory value."));
+  setMem.layoutX = 20
+  setMem.layoutY = 650
+  setMem.setMinWidth(120)
+  setMem.onAction = (e:ActionEvent) => {
+    updateMem(Integer.parseInt(memAddrBox.text(), 16), Integer.parseInt(memValBox.text(), 16))
+  }
+
+  val leftPaneInputs = Array(scrollpane1, regAddrBox, regValBox, setReg,
+    scrollpane2, memAddrBox, memValBox, setMem)
 
   //Functions
 
@@ -618,12 +666,18 @@ object LC2200Simulator extends JFXApp {
       children += regTableLabel
     val memTableLabel = new Label("Memory View")
       memTableLabel.layoutX = 20
-      memTableLabel.layoutY = 260
+      memTableLabel.layoutY = 350
       children += memTableLabel
 
     //Adding left pane inputs
     children += InputManager.scrollpane1
+    children += InputManager.regAddrBox
+    children += InputManager.regValBox
+    children += InputManager.setReg
     children += InputManager.scrollpane2
+    children += InputManager.memAddrBox
+    children += InputManager.memValBox
+    children += InputManager.setMem
 
     
       }

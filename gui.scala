@@ -59,8 +59,8 @@ abstract class Component {
 
   def outputToBus() {
     val loc = getOutputLocation()
-    outWire = new RealWire(loc._1, loc._2, loc._1, DataPath.busBottom)
-    DataPath.bus.add(outWire)
+    DataPath.bus.add(new RealWire(loc._1, loc._2, loc._1, DataPath.busBottom))
+    outWire = DataPath.bus
   }
   
   def inputToComponent(c: Component, input: Int = 0) {
@@ -108,9 +108,13 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
 
   def activate(): Array[Short] = {
     shape.stroke = Red
+    text.fill = Red
     return source.readInputData()
   }
-  def deactivate() = shape.stroke = Black
+  def deactivate() {
+    shape.stroke = Black
+    text.fill = Black
+  }
 }
 
 object DataPath {
@@ -125,8 +129,8 @@ object DataPath {
 
   val bus: WireSet = new WireSet()
 
-  def activate(s: String): Array[Short] = {
-    return activators(s).activate()
+  def activate(s: String, f: Array[Short]=>Short) {
+    activators(s).s.setOutputData(f(activators(s).activate()))
   }
   def deactivate(s: String) = activators(s).deactivate()
   def deactivateAll() {
@@ -224,7 +228,6 @@ abstract class Wire() {
     return value
   }
 }
-
 class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) extends Wire {
 
   val shape = Line(sx, sy, ex, ey);
@@ -233,8 +236,19 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
 
   DataPath.pane.children += shape
 
+  var text = new Text {
+    x = (sx+ex)/2
+    y = (sy+ey)/2
+    text = InputManager.formatInt(value)
+    style = "-fx-font-size: 8pt"
+    fill = Black
+  }
+  DataPath.pane.children += text
+
+
   def setValue(value: Short) = {
     this.value = value;
+    text.text = InputManager.formatInt(value)
   }
 }
 
@@ -530,6 +544,7 @@ object LC2200Simulator extends JFXApp {
     alu.setNumberOfInputs(2)
     alu.inputToComponent(aBox, 0)
     alu.inputToComponent(bBox, 1)
+    alu.createActivator("ALUFunc", -1)
     val aluDrive = new TriComp(xBasis+45, 270, 30, 30, "ALUDrive");
     aluDrive.inputToComponent(alu)
     aluDrive.outputToBus()

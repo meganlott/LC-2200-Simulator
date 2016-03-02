@@ -9,7 +9,7 @@
         "DrREG" : true
     },
     {
-        "ALUFunc" : "add",
+        "ALUFunc" : true,
         "DrALU" : true,
         "WrREG" : true
     }

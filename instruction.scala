@@ -20,14 +20,13 @@ class Instruction {
    *
    * Every signal is currently present in the Array, this can change (probably should...)
    */
-  val possibleSignals = List("LdPC", "DrPC", "LdA", "LdB", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdIR")
   def getSignals(idx : Int) : Map[String,Boolean] = {
     var signalMap: Map[String, Boolean] = Map()
     if(steps.length() <= idx)
       throw new Exception("bad step index")
 
     val signals = steps.getJSONObject(idx)
-    for (i <- possibleSignals) {
+    for (i <- SimulationManager.possibleSignals) {
       try {
         signalMap += (i -> signals.getBoolean(i))
       } catch {

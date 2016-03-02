@@ -20,67 +20,21 @@ class Instruction {
    *
    * Every signal is currently present in the Array, this can change (probably should...)
    */
-  def getSignals(idx : Int) : ArrayBuffer[String] = {
-    val ret : ArrayBuffer[String] = ArrayBuffer()
-    if(steps.length() <= idx) {
-      return ret
-    }
+  val possibleSignals = List("LdPC", "DrPC", "LdA", "LdB", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdIR")
+  def getSignals(idx : Int) : Map[String,Boolean] = {
+    var signalMap: Map[String, Boolean] = Map()
+    if(steps.length() <= idx)
+      throw new Exception("bad step index")
 
     val signals = steps.getJSONObject(idx)
-
-    //TODO(Marcus): There has got to be a better way of checking to see if a key is in a JSONObject,
-    //All of these Try-catch blocks are nasty...
-   
-    ret += "loada"
-    try {
-      val loada : Boolean = signals.getBoolean("loada")
-      ret += loada.toString()
-    } catch {
-      //case e : Exception => println("this is gonna be iffy...");
-      case e : Exception => ret += "";
+    for (i <- possibleSignals) {
+      try {
+        signalMap += (i -> signals.getBoolean(i))
+      } catch {
+        case e: Exception => signalMap += (i -> false)
+      }
     }
-    
-    ret += "loadb"
-    try {
-      val loadb : Boolean = signals.getBoolean("loadb")
-      ret += loadb.toString()
-    } catch {
-      case e : Exception => ret += "";
-    }
-    
-    ret += "drreg"
-    try {
-      val drreg : Boolean = signals.getBoolean("drreg")
-      ret += drreg.toString()
-    } catch {
-      case e : Exception => ret += "";
-    }
-    
-    ret += "drualu"
-    try {
-      val dralu : Boolean = signals.getBoolean("dralu")
-      ret += dralu.toString()
-    } catch {
-      case e : Exception => ret += "";
-    }
-    
-    ret += "wrreg"
-    try {
-      val wrreg : Boolean = signals.getBoolean("wrreg")
-      ret += wrreg.toString()
-    } catch {
-      case e : Exception => ret += "";
-    }
-    
-    ret += "alufunc"
-    try {
-      val alufunc : String = signals.getString("alufunc")
-      ret += alufunc
-    } catch {
-      case e : Exception => ret += "";
-    }
-
-    return ret
+    return signalMap
 
   }
 }

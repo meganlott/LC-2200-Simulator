@@ -84,9 +84,9 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
   val name = n;
   val source = s;
   var offset = 12;
+  val shape = Line(xx + offset, yy, xx, yy)
   if (flip != 0) {
     offset = flip * 16;
-    val shape = Line(xx + offset, yy, xx, yy)
     shape.stroke = Black
     shape.strokeWidth = 1
     DataPath.pane.children += shape
@@ -107,8 +107,10 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
   DataPath.pane.children += text
 
   def activate(): Array[Short] = {
+    shape.stroke = Red
     return source.readInputData()
   }
+  def deactivate() = shape.stroke = Black
 }
 
 object DataPath {
@@ -126,6 +128,7 @@ object DataPath {
   def activate(s: String): Array[Short] = {
     return activators(s).activate()
   }
+  def deactivate(s: String) = activators(s).deactivate()
 
   def addActivator(a: Activator) {
     activators += (a.name -> a)
@@ -441,15 +444,15 @@ object InputManager {
   //Tells the simulation manager to run an entire instruction
   def run() {
     //TODO
-    println("Exectute pressed")
-    updateMem(3,55)
-    println( getMemVal(3) )
+    //updateMem(3,55)
+    //println( getMemVal(3) )
+    SimulationManager.runInstruction(0)
   }
 
   //Tells simulation manager to complete one step of an instruction
   def stepForwardPressed() {
     //TODO
-    println("step forward pressed")
+    SimulationManager.stepInstruction(0)
   }
 
   //Tells simulation manager to go back to the previous instruction step
@@ -627,31 +630,5 @@ object LC2200Simulator extends JFXApp {
   }
   stage.getIcons().add(new Image("file:CPU.png"))
  
-  /*
-   * EXAMPLE CODE USAGE HERE!!!!
-   * Here I make a JsonLoader and get back the instructions.
-   */
-  val loader = new JsonLoader()
-  val instructions = loader.getInstructions() //get all instructions available
-  var addInstr : Instruction = _
-  //find add instruction
-  var instr : Instruction = _
-  for(instr <- instructions) {
-    if(instr.name.compare("add") == 0) {
-      addInstr = instr
-      //No break in scala :(
-    }
-  }
-  var step = addInstr.getSignals(0) //get all signals for step 0 of add
-  for(i <- 0 to step.length-1 by 2) {
-    //If the signal isn't ""
-    if(step(i+1).compare("") != 0) {
-      System.out.println(step(i)) //print sigal name
-      System.out.println(step(i+1)) //print signal value
-    }
-  }
-  /*
-   * End Example JsonLoader Code here!
-   */
 }
 

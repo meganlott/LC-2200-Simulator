@@ -24,7 +24,7 @@ abstract class Component {
 
   val name: String
 
-  var activator: Activator = null
+  var activators: ArrayBuffer[Activator] = new ArrayBuffer[Activator]()
 
   var inputs: Int = 1
 
@@ -57,10 +57,16 @@ abstract class Component {
     DataPath.bus.add(inWires(input))
   }
 
+  def outputToBus() {
+    val loc = getOutputLocation()
+    outWire = new RealWire(loc._1, loc._2, loc._1, DataPath.busBottom)
+    DataPath.bus.add(outWire)
+  }
+  
   def inputToComponent(c: Component, input: Int = 0) {
     val loc1 = c.getOutputLocation()
     val loc2 = getInputLocation(input)
-    val newWire = new RealWire(loc1._1, loc1._2, loc2._1, loc2._2)
+    val newWire = new RealWire(loc1._1, loc1._2, loc1._1, loc2._2)
     inWires(input) = newWire
     c.outWire = newWire
   }
@@ -68,7 +74,7 @@ abstract class Component {
   def createActivator(n: String, dir: Int)
   
   def addActivator(a: Activator) {
-    activator = a
+    activators += a
     DataPath.addActivator(a)
   }
   //def getSceneComponent(): Node;
@@ -77,18 +83,23 @@ abstract class Component {
 class Activator(val xx: Double, val yy: Double, val n: String, val s: Component, val flip: Int = 0) {
   val name = n;
   val source = s;
-  var offset = 0
+  var offset = 12;
   if (flip != 0) {
     offset = flip * 16;
     val shape = Line(xx + offset, yy, xx, yy)
     shape.stroke = Black
     shape.strokeWidth = 1
     DataPath.pane.children += shape
+    if (flip < 0) {
+      offset += flip * 42
+    } else {
+      offset += 3
+    }
   }
   
   var text = new Text {
     x = xx + offset
-    y = yy
+    y = yy + 3
     text = name
     style = "-fx-font-size: 8pt"
     fill = Black
@@ -135,7 +146,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   shape.strokeWidth = 2
 
   var text = new Text {
-    x = xx + 8
+    x = xx + 5
     y = yy + 20
     text = name
     style = "-fx-font-size: 12pt"
@@ -146,7 +157,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   DataPath.pane.children += text
   DataPath.addComponent(this)
 
-  def getInputLocation(input: Int): (Double, Double) = {
+  def getInputLocation(input: Int = 0): (Double, Double) = {
     var step = w / (inputs + 1)
     return (x + step * (input+1), y)
   }
@@ -159,8 +170,40 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
     var sx = x
     if (dir > 0) {
       sx = x + w
+    } else if (dir == 0) {
+      sx = getInputLocation(activators.size)._1 - 24
+      text.y = y + 40
     }
-    var a = new Activator(sx, y+20, n, this, dir)
+    var a = new Activator(sx, y+15, n, this, dir)
+    addActivator(a)
+  }
+}
+
+class TriComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val n: String) extends Component{
+  var x = xx;
+  var y = yy;
+  val shape = Polygon(xx-w/2,yy,xx+w/2,yy,xx,yy+h);
+  val name = n;
+  shape.fill = White
+  shape.stroke = Black
+  shape.strokeWidth = 2
+  DataPath.pane.children += shape
+  DataPath.addComponent(this)
+
+  def getInputLocation(input: Int = 0): (Double, Double) = {
+    return (x, y)
+  }
+
+  def getOutputLocation(): (Double, Double) = {
+    return (x, y+h)
+  }
+
+  def createActivator(n: String, dir: Int) {
+    var sx = x - w/2;
+    if (dir > 0) {
+      sx = x + w/2;
+    }
+    var a = new Activator(sx, y+15, n, this, dir)
     addActivator(a)
   }
 }
@@ -449,71 +492,76 @@ object LC2200Simulator extends JFXApp {
     DataPath.bus.add(new RealWire(20,20,20,320))
     DataPath.bus.add(new RealWire(20,320,720,320))
 
+    var xBasis = 90
 
-    val pc = new RectComp(60, 50, 40, 30, "PC");
+    val pc = new RectComp(xBasis, 50, 40, 30, "PC");
     pc.inputToBus(0)
     pc.createActivator("LdPC", -1)
+    val pcDrive = new TriComp(xBasis+20,270,30,30,"PCDrive");
+    pcDrive.inputToComponent(pc)
+    pcDrive.outputToBus()
+    pcDrive.createActivator("DrPC", -1)
 
-    var poly = Polygon(65,270,95,270,80,300);
-    poly.fill = White
-    poly.stroke = Black
-    poly.strokeWidth = 2
-    children += poly;
+    xBasis += 110
 
-    val aBox = new RectComp(120, 50, 40, 30, "A");
+    val aBox = new RectComp(xBasis, 50, 40, 30, "A");
     aBox.inputToBus()
-    val bBox = new RectComp(170, 50, 40, 30, "B");
+    aBox.createActivator("LdA", -1)
+    val bBox = new RectComp(xBasis+50, 50, 40, 30, "B");
     bBox.inputToBus()
+    bBox.createActivator("LdB", 1)
 
-    val alu = new RectComp(120, 120, 90, 90, "ALU")
+    val alu = new RectComp(xBasis, 120, 90, 90, "ALU")
     alu.setNumberOfInputs(2)
     alu.inputToComponent(aBox, 0)
     alu.inputToComponent(bBox, 1)
-    /*
-    poly = Polygon(120,120, 160,120, 165,130, 170,120, 210,120, 190, 210, 140, 210);
-    poly.fill = White
-    poly.stroke = Black
-    poly.strokeWidth = 2
-    children += poly;
-    */
-    poly = Polygon(150,270,180,270,165,300)
-    poly.fill = White
-    poly.stroke = Black
-    poly.strokeWidth = 2
-    children += poly;
+    val aluDrive = new TriComp(xBasis+45, 270, 30, 30, "ALUDrive");
+    aluDrive.inputToComponent(alu)
+    aluDrive.outputToBus()
+    aluDrive.createActivator("DrALU", -1)
 
-    new RectComp(240, 120, 80, 100, "registers");
-    poly = Polygon(265,270,295,270,280,300);
-    poly.fill = White
-    poly.stroke = Black
-    poly.strokeWidth = 2
-    children += poly;
+    xBasis += 150
+    
+    val regs = new RectComp(xBasis, 120, 80, 100, "registers");
+    regs.inputToBus()
+    regs.createActivator("Din", 0)
+    regs.createActivator("WrREG", -1)
+    val regDrive = new TriComp(xBasis+40, 270, 30, 30, "REGDrive");
+    regDrive.inputToComponent(regs)
+    regDrive.outputToBus()
+    regDrive.createActivator("DrREG", -1)
 
-    val mar = new RectComp(360, 50, 40, 30, "MAR");
-    mar.inputToBus(0)
-    val mem = new RectComp(360, 120, 80, 100, "memory\n2^32 x\n32 bits");
+    xBasis += 150
+
+    val mar = new RectComp(xBasis, 50, 40, 30, "MAR");
+    mar.inputToBus()
+    mar.createActivator("LdMAR", -1)
+    val mem = new RectComp(xBasis, 120, 80, 100, "memory\n2^32 x\n32 bits");
     mem.setNumberOfInputs(2)
     mem.inputToBus(1)
     mem.inputToComponent(mar, 0)
-    poly = Polygon(385,270,415,270,400,300);
-    poly.fill = White
-    poly.stroke = Black
-    poly.strokeWidth = 2
-    children += poly;
+    mem.createActivator("Addr", 0)
+    mem.createActivator("Din", 0)
+    mem.createActivator("WrMEM", -1)
+    val memDrive = new TriComp(xBasis+40, 270, 30, 30, "MEMDrive")
+    memDrive.inputToComponent(mem)
+    memDrive.outputToBus()
+    memDrive.createActivator("DrMEM", -1)
 
-    new RectComp(470, 50, 40, 30, "IR");
-    new RectComp(100, 360, 40, 30, "=0?");
+    xBasis += 120
 
-    new RectComp(480, 200, 60, 40, "sign\nextend");
-      
-    new RectComp(100, 410, 40, 30, "Z");
+    val ir = new RectComp(xBasis, 50, 40, 30, "IR");
+    ir.inputToBus()
+    ir.createActivator("LdIR", -1)
+
+    val signEx = new RectComp(xBasis + 5, 200, 60, 50, "sign\nextend");
+    //signEx.outputToBus()
     
-    poly = Polygon(495,270,525,270,510,300);
-    poly.fill = White
-    poly.stroke = Black
-    poly.strokeWidth = 2
-    children += poly;
-
+    val eqZero = new RectComp(100, 360, 40, 30, "=0?");
+    //eqZero.inputToBus()
+      
+    val Z = new RectComp(100, 410, 40, 30, "Z");
+    Z.inputToComponent(eqZero)
   }
 
   lazy val topPane: Pane = new Pane {

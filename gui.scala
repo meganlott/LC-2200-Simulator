@@ -461,15 +461,11 @@ object InputManager {
 
   //Tells the simulation manager to run an entire instruction
   def run() {
-    //TODO
-    //updateMem(3,55)
-    //println( getMemVal(3) )
     SimulationManager.runInstruction(0)
   }
 
   //Tells simulation manager to complete one step of an instruction
   def stepForwardPressed() {
-    //TODO
     SimulationManager.stepInstruction(0)
   }
 

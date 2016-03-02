@@ -9,7 +9,7 @@ object SimulationManager {
   var currentStep = 0
   // this is the update order of the datapath, so the order is very important
   // this is not the right way to do this
-  val possibleSignals = List("LdPC", "DrPC", "ALUFunc", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
+  val possibleSignals = List("UseRYHack", "LdPC", "DrPC", "ALUFunc", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
 
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
@@ -18,23 +18,46 @@ object SimulationManager {
       currentStep = 0
     }
     var step = currentInstruction.get.getSignals(currentStep) //get all signals for step 0 of add
+    // first make sure regs is outputing right info
+    var useRYinsteadOfRX = false
+    def updateRegOutput() = {
+      val output = (
+        if (useRYinsteadOfRX)
+          InputManager.getRegVal(Integer.parseInt(InputManager.rytextbox.text(), 10))
+        else
+          InputManager.getRegVal(Integer.parseInt(InputManager.rxtextbox.text(), 10))
+        ).toShort
+      DataPath.components("registers").setOutputData(output)
+      output
+    }
+    updateRegOutput()
     for( key <- possibleSignals;
          value = step(key)) {
-      //If the signal isn't ""
-      val activateFunc = (inputs: Array[Short]) => {
-        if (key == "ALUFunc")
-          inputs.reduceLeft((j,k)=>(j+k).toShort)
-        else if (key == "DrREG")
-          1
-        else
-          inputs(0)
-      }.toShort
-      if (value) {
-        DataPath.activate(key, activateFunc)
-        println("Activating " + key)
-      } else
-        DataPath.deactivate(key)
+      if (key == "UseRYHack") {
+        useRYinsteadOfRX = value
+        println("USE RY INSTEAD OF RX: " + value)
+        updateRegOutput()
+      } else {
+        def activateFunc(inputs: Array[Short]) = {
+          if (key == "ALUFunc") {
+            inputs.reduceLeft((j,k)=>(j+k).toShort)
+          } else if (key == "WrREG") {
+            InputManager.updateReg(Integer.parseInt(InputManager.rztextbox.text(), 10),inputs(0))
+            updateRegOutput()
+          } else {
+            inputs(0)
+          }
+        }.toShort
+        if (value) {
+          DataPath.activate(key, activateFunc)
+          println("Activating " + key)
+        } else
+          DataPath.deactivate(key)
+      }
     }
+    // at the end, make sure the ALU is updated
+    DataPath.components("ALU").setOutputData(DataPath.components("ALU").readInputData().
+      reduceLeft((j,k)=>(j+k).toShort))
     println("step forward pressed")
     currentStep += 1
     if (currentStep == currentInstruction.get.steps.length()) {

@@ -1,3 +1,5 @@
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 object SimulationManager {
   val loader = new JsonLoader()
@@ -30,9 +32,13 @@ object SimulationManager {
   def runInstruction(i: Int) {
     println("Exectute pressed")
     stepInstruction(i)
-    while (currentInstruction.isDefined) {
+    Future {
+      while (currentInstruction.isDefined) {
+        Thread sleep 1000
+        stepInstruction(i)
+      }
       Thread sleep 1000
-      stepInstruction(i)
+      DataPath.deactivateAll()
     }
   }
 }

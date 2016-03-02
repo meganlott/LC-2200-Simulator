@@ -129,6 +129,10 @@ object DataPath {
     return activators(s).activate()
   }
   def deactivate(s: String) = activators(s).deactivate()
+  def deactivateAll() {
+    for((key,value) <- activators)
+      value.deactivate()
+  }
 
   def addActivator(a: Activator) {
     activators += (a.name -> a)

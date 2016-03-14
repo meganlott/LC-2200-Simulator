@@ -15,7 +15,7 @@ import scalafx.scene.shape.Polygon
 import javafx.scene.control.Tooltip
 import javafx.scene.image.{Image, ImageView}
 import scalafx.event.ActionEvent
-import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label, TextField}
+import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, MenuItem, MenuBar, Label, TextField, ComboBox}
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 import scala.collection.mutable.ArrayBuffer
@@ -303,25 +303,22 @@ object InputManager {
 
   // Instruction drop down menu
   //TODO make this actually functional
-  val instructionSelection = new MenuBar
-  //val instructionMenu = new Menu("Choose Instruction")
   val instructionMenu = new Menu("Add")
-  var instructionMenuItemList = List[MenuItem]()
+  var instructionMenuItemList = List[String]()
 
   //Dynamically update names based on the file system
   val loader = new JsonLoader()
   val instructions = loader.getInstructions() //get all instructions available
   for(instr <- instructions) {
     ///create menu item
-    val newItem = new MenuItem(instr.name)
+    val newItem = instr.name
     //add to list
     instructionMenuItemList = instructionMenuItemList ::: List(newItem)
   }
+  val instructionSelection = new ComboBox(instructionMenuItemList)
 
   //TODO Make these locations relative to the size of the screen
   //Set up selection menu
-  instructionMenu.items = instructionMenuItemList
-  instructionSelection.menus = List(instructionMenu)
   instructionSelection.layoutX = 300
   instructionSelection.layoutY = 58
   

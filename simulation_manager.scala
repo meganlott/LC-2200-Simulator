@@ -9,7 +9,7 @@ object SimulationManager {
   var currentStep = 0
   // this is the update order of the datapath, so the order is very important
   // this is not the right way to do this
-  val possibleSignals = List("UseRYHack", "LdPC", "DrPC", "ALUFunc", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
+  val possibleSignals = List("UseSR2Hack", "LdPC", "DrPC", "ALUFunc", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
 
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
@@ -19,13 +19,13 @@ object SimulationManager {
     }
     var step = currentInstruction.get.getSignals(currentStep) //get all signals for step 0 of add
     // first make sure regs is outputing right info
-    var useRYinsteadOfRX = false
+    var useSR2insteadOfSR1 = false
     def updateRegOutput() = {
       val output = (
-        if (useRYinsteadOfRX)
-          InputManager.getRegVal( InputManager.getRegisterInput("y") )
+        if (useSR2insteadOfSR1)
+          InputManager.getRegVal( InputManager.getRegisterInput("sr2") )
         else
-          InputManager.getRegVal( InputManager.getRegisterInput("x") )
+          InputManager.getRegVal( InputManager.getRegisterInput("sr1") )
         ).toShort
       DataPath.components("registers").setOutputData(output)
       output
@@ -33,16 +33,16 @@ object SimulationManager {
     updateRegOutput()
     for( key <- possibleSignals;
          value = step(key)) {
-      if (key == "UseRYHack") {
-        useRYinsteadOfRX = value
-        println("USE RY INSTEAD OF RX: " + value)
+      if (key == "UseSR2Hack") {
+        useSR2insteadOfSR1 = value
+        println("USE SR2 INSTEAD OF SR1: " + value)
         updateRegOutput()
       } else {
         def activateFunc(inputs: Array[Short]) = {
           if (key == "ALUFunc") {
             inputs.reduceLeft((j,k)=>(j+k).toShort)
           } else if (key == "WrREG") {
-            InputManager.updateReg(InputManager.getRegisterInput("z") ,inputs(0))
+            InputManager.updateReg(InputManager.getRegisterInput("rd") ,inputs(0))
             updateRegOutput()
           } else {
             inputs(0)

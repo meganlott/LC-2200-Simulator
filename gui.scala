@@ -326,34 +326,34 @@ object InputManager {
   instructionSelection.layoutY = 58
   
   // first register input
-  val rxtextbox = new TextField
-    rxtextbox.promptText = "RX"
-    rxtextbox.setTooltip(
+  val sr1textbox = new TextField
+    sr1textbox.promptText = "SR1"
+    sr1textbox.setTooltip(
     new Tooltip("Enter a register.")
     );
-    rxtextbox.maxWidth = 50
-    rxtextbox.layoutX = 470
-    rxtextbox.layoutY = 60
+    sr1textbox.maxWidth = 50
+    sr1textbox.layoutX = 530
+    sr1textbox.layoutY = 60
 
   // second register input
-  val rytextbox = new TextField
-    rytextbox.promptText = "RY"
-    rytextbox.setTooltip(
+  val sr2textbox = new TextField
+    sr2textbox.promptText = "SR2"
+    sr2textbox.setTooltip(
     new Tooltip("Enter a register.")
     );
-    rytextbox.maxWidth = 50
-    rytextbox.layoutX = 530
-    rytextbox.layoutY = 60
+    sr2textbox.maxWidth = 50
+    sr2textbox.layoutX = 590
+    sr2textbox.layoutY = 60
 
  // third register input
-  val rztextbox = new TextField
-    rztextbox.promptText = "RZ"
-    rztextbox.setTooltip(
+  val rdtextbox = new TextField
+    rdtextbox.promptText = "RD"
+    rdtextbox.setTooltip(
     new Tooltip("Enter a register or numerical value up to (range?)")
     );
-    rztextbox.maxWidth = 50
-    rztextbox.layoutX = 590
-    rztextbox.layoutY = 60
+    rdtextbox.maxWidth = 50
+    rdtextbox.layoutX = 470
+    rdtextbox.layoutY = 60
 
   // execute instruction button
   val execute = new Button("Execute")
@@ -366,7 +366,7 @@ object InputManager {
     execute.onAction = (e:ActionEvent) => {
       run()
     }
-  val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, rxtextbox, rytextbox, rxtextbox, execute)
+  val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, sr1textbox, sr2textbox, sr1textbox, execute)
 
 //Left panel inputs
   val scrollpane1 : ScrollPane = new ScrollPane 
@@ -488,9 +488,9 @@ object InputManager {
     reg.toLowerCase()
     var selected = new TextField
     reg match {
-      case "x" => selected = rxtextbox
-      case "y" => selected = rytextbox
-      case "z" => selected = rztextbox
+      case "sr1" => selected = sr1textbox
+      case "sr2" => selected = sr2textbox
+      case "rd" => selected = rdtextbox
       case woah => return " "
     }
     return selected.text()
@@ -687,9 +687,9 @@ object LC2200Simulator extends JFXApp {
     children += InputManager.stepForward
     children += InputManager.stepBackward
     children += InputManager.instructionSelection
-    children += InputManager.rxtextbox
-    children += InputManager.rytextbox
-    children += InputManager.rztextbox
+    children += InputManager.sr1textbox
+    children += InputManager.sr2textbox
+    children += InputManager.rdtextbox
     children += InputManager.execute
   }
 

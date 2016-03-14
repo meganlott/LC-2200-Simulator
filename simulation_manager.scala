@@ -23,9 +23,9 @@ object SimulationManager {
     def updateRegOutput() = {
       val output = (
         if (useRYinsteadOfRX)
-          InputManager.getRegVal(Integer.parseInt(InputManager.rytextbox.text(), 10))
+          InputManager.getRegVal( InputManager.getRegisterInput("y") )
         else
-          InputManager.getRegVal(Integer.parseInt(InputManager.rxtextbox.text(), 10))
+          InputManager.getRegVal( InputManager.getRegisterInput("x") )
         ).toShort
       DataPath.components("registers").setOutputData(output)
       output
@@ -42,7 +42,7 @@ object SimulationManager {
           if (key == "ALUFunc") {
             inputs.reduceLeft((j,k)=>(j+k).toShort)
           } else if (key == "WrREG") {
-            InputManager.updateReg(Integer.parseInt(InputManager.rztextbox.text(), 10),inputs(0))
+            InputManager.updateReg(InputManager.getRegisterInput("z") ,inputs(0))
             updateRegOutput()
           } else {
             inputs(0)

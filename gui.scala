@@ -19,6 +19,7 @@ import scalafx.scene.control.{Button, TableView, TableColumn, ScrollPane, Menu, 
 import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 import scala.collection.mutable.ArrayBuffer
+import scala.util.matching.Regex
 
 abstract class Component {
 
@@ -301,6 +302,7 @@ object InputManager {
     }
 
   // Instruction drop down menu
+  //TODO make this actually functional
   val instructionSelection = new MenuBar
   //val instructionMenu = new Menu("Choose Instruction")
   val instructionMenu = new Menu("Add")
@@ -478,12 +480,44 @@ object InputManager {
 //Takes in an integer location and an integer value then updates the memory location in
   //datapathstate and the UI
   def updateMem(location: Int, value: Int) {
-
     memData(location) = MemInfo(formatInt(location), formatInt(value))
   } 
 
+  //takes in string specifying x,y,or z, returns the raw input currently in that register
+  def rawRegisterInput(reg : String ) : String = {
+    reg.toLowerCase()
+    var selected = new TextField
+    reg match {
+      case "x" => selected = rxtextbox
+      case "y" => selected = rytextbox
+      case "z" => selected = rztextbox
+      case woah => return " "
+    }
+    return selected.text()
+  }
+
+  //parses register input text values
+  def parseRegisterInput(input : String ) : Int = {
+    val pattern = new Regex("\\d")
+    val matched = (pattern findAllIn input)
+    if (matched.length != 1) {
+      //TODO Handle error
+      return -1
+    }
+    val str = (pattern findAllIn input).mkString("")
+    return Integer.parseInt(str, 10)
+  }
+  
+  //takes in a string with a register name and returns the integer value
+  //of that register
+  def getRegisterInput(reg : String) : Int = {
+    val str = rawRegisterInput(reg)
+    println(str)
+    return parseRegisterInput(str)
+  }
+
   //Retreives the value currently on the screen at memory location
-  def getMemVal(location: Int) : Int = {
+  def getMemVal(location: Int) :  Int = {
     var value = memData(location).mem
     return convertHexString(value)
   }

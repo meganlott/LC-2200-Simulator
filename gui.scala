@@ -9,6 +9,7 @@ import scalafx.scene.shape._
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint._
 import scalafx.scene.text._
+import scalafx.geometry.{VPos, Pos}
 import scalafx.scene.Node
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Polygon
@@ -84,17 +85,17 @@ abstract class Component {
 class Activator(val xx: Double, val yy: Double, val n: String, val s: Component, val flip: Int = 0) {
   val name = n;
   val source = s;
-  var offset = 12;
+  var offset = 12 * flip;
   val shape = Line(xx + offset, yy, xx, yy)
   if (flip != 0) {
     offset = flip * 16;
     shape.stroke = Black
     shape.strokeWidth = 1
     DataPath.pane.children += shape
-    if (flip < 0) {
-      offset += flip * 42
-    } else {
+    if (flip > 0) {
       offset += 3
+    } else if (flip < 0) {
+      offset += 5
     }
   }
   
@@ -105,6 +106,11 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
     style = "-fx-font-size: 8pt"
     fill = Black
   }
+  val j: Double = text.getLayoutBounds().getWidth()
+  if (flip < 0) {
+    text.x = xx + offset - j
+  }
+  //text.x += j
   DataPath.pane.children += text
 
   def activate(): Array[Short] = {
@@ -164,6 +170,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
     style = "-fx-font-size: 12pt"
     fill = Black
   }
+  text.x = x + w/2 - text.getLayoutBounds().getWidth()/2 - 3
 
   DataPath.pane.children += shape
   DataPath.pane.children += text
@@ -244,7 +251,7 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
     style = "-fx-font-size: 8pt"
     fill = Black
   }
-  DataPath.pane.children += text
+  //DataPath.pane.children += text
 
 
   def setValue(value: Short) = {
@@ -625,7 +632,7 @@ object LC2200Simulator extends JFXApp {
     aluDrive.outputToBus()
     aluDrive.createActivator("DrALU", -1)
 
-    xBasis += 150
+    xBasis += 170
     
     val regs = new RectComp(xBasis, 120, 80, 100, "registers");
     regs.inputToBus()
@@ -636,7 +643,7 @@ object LC2200Simulator extends JFXApp {
     regDrive.outputToBus()
     regDrive.createActivator("DrREG", -1)
 
-    xBasis += 150
+    xBasis += 160
 
     val mar = new RectComp(xBasis, 50, 40, 30, "MAR");
     mar.inputToBus()

@@ -303,9 +303,20 @@ object InputManager {
     );
     stepBackward.layoutX = 20
     stepBackward.layoutY = 60
+    stepBackward.setDisable(true)
     stepBackward.setMinWidth(120)
     stepBackward.onAction = (e:ActionEvent) => {
       stepBackwardPressed()
+    }
+
+  //reset button
+  val reset = new Button("Reset")
+    reset.layoutX = 20
+    reset.layoutY = 90
+    reset.setDisable(true)
+    reset.setMinWidth(120)
+    reset.onAction = (e:ActionEvent) => {
+      resetPressed()
     }
 
   // Instruction drop down menu
@@ -485,6 +496,23 @@ object InputManager {
 
   //Functions
 
+  //Enables/Disables the proper buttons when the user starts stepping through a function
+  def startStepThrough() {
+    stepBackward.setDisable(false)
+    reset.setDisable(false)
+  } 
+
+  def endStepThrough() {
+    stepForward.setDisable(true)
+  }
+
+  def resetButtons() {
+    stepBackward.setDisable(true)
+    stepForward.setDisable(false)
+    reset.setDisable(true)
+  }
+  
+
   //Takes in an integer value and formats it for the UI
   def formatInt( i: Int) : String = {
       val hexstring = Integer.toHexString(i)
@@ -500,6 +528,7 @@ object InputManager {
   def updateMem(location: Int, value: Int) {
     memData(location) = MemInfo(formatInt(location), formatInt(value))
   } 
+
 
   //takes in string specifying x,y,or z, returns the raw input currently in that register
   def rawRegisterInput(reg : String ) : String = {
@@ -573,6 +602,11 @@ object InputManager {
   def stepBackwardPressed() {
     //TODO
     println("step backward pressed")
+  }
+
+  def resetPressed() {
+    //TODO
+    println("reset")
   }
 
   //Retreives the name of the instruction currently selected in the instruction menu selection
@@ -704,6 +738,7 @@ object LC2200Simulator extends JFXApp {
 
     children += InputManager.stepForward
     children += InputManager.stepBackward
+    children += InputManager.reset
     children += InputManager.instructionSelection
     children += InputManager.sr1textbox
     children += InputManager.sr2textbox

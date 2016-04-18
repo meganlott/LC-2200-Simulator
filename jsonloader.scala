@@ -28,6 +28,12 @@ class JsonLoader {
      * and load all json files instead of listing them here?
      */
     loadFile("add.json")
+    loadFile("nand.json")
+    loadFile("addi.json")
+    loadFile("sw.json")
+    loadFile("lw.json")
+    loadFile("beq.json")
+    loadFile("jalr.json")
   }
   
   /*

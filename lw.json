@@ -1,0 +1,22 @@
+{
+    "instruction" : "lw",
+    "steps" : [ {
+        "LdA" : true,
+        "DrREG" : true
+    },
+    {
+        "UseSR2Hack" : true,
+        "LdB" : true,
+        "DrOFF" : true
+    },
+    {
+        "ALUFunc" : true,
+        "DrALU" : true,
+        "LdMAR" : true
+    },
+    {
+        "DrMEM" : true,
+        "WrREG" : true
+    }
+    ]
+}

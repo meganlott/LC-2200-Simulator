@@ -1,0 +1,13 @@
+{
+    "instruction" : "jalr",
+    "steps" : [ {
+        "LdPC" : true,
+        "DrREG" : true,
+        "UseSR2Hack" : true
+    },
+    {
+        "LdB" : true,
+        "DrREG" : true
+    }
+    ]
+}

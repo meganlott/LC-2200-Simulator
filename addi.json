@@ -1,0 +1,18 @@
+{
+    "instruction" : "addi",
+    "steps" : [ {
+        "LdA" : true,
+        "DrREG" : true
+    },
+    {
+        "UseSR2Hack" : true,
+        "LdB" : true,
+        "DrOFF" : true
+    },
+    {
+        "ALUFunc" : true,
+        "DrALU" : true,
+        "WrREG" : true
+    }
+    ]
+}

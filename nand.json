@@ -1,0 +1,18 @@
+{
+    "instruction" : "nand",
+    "steps" : [ {
+        "LdA" : true,
+        "DrREG" : true
+    },
+    {
+        "UseSR2Hack" : true,
+        "LdB" : true,
+        "DrREG" : true
+    },
+    {
+        "ALUFunc" : true,
+        "DrALU" : true,
+        "WrREG" : true
+    }
+    ]
+}

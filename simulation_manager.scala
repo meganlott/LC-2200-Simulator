@@ -13,6 +13,7 @@ object SimulationManager {
 
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
+    InputManager.updateStep(currentStep+1);
     if (!currentInstruction.isDefined || currentInstruction.get != instructions(i)) {
       currentInstruction = Some(instructions(i))
       currentStep = 0
@@ -63,6 +64,7 @@ object SimulationManager {
     if (currentStep == currentInstruction.get.steps.length()) {
       currentInstruction = None
       currentStep = 0
+      InputManager.updateStep(0);
     }
   }
   def runInstruction(i: Int) {

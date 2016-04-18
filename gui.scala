@@ -372,6 +372,20 @@ object InputManager {
     }
   val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, sr1textbox, sr2textbox, sr1textbox, execute)
 
+  var stepCounter = new Text {
+    x = 800
+    y = 80
+    text = "Step Counter: Done"
+    style = "-fx-font-size: 10pt"
+    fill = Black
+  }
+  def updateStep(step: Int) {
+    if (step == 0)
+      stepCounter.text = "Step Counter: Final Step"
+    else
+      stepCounter.text = "Step Counter: Step " + step
+  }
+
 //Left panel inputs
   val scrollpane1 : ScrollPane = new ScrollPane 
     val regData = new ObservableBuffer[RegInfo]()
@@ -695,6 +709,7 @@ object LC2200Simulator extends JFXApp {
     children += InputManager.sr2textbox
     children += InputManager.rdtextbox
     children += InputManager.execute
+    children += InputManager.stepCounter
   }
 
   lazy val leftPane: Pane = new Pane {

@@ -74,6 +74,7 @@ object InputManager {
     instructionMenuItemList = instructionMenuItemList ::: List(newItem)
   }
   val instructionSelection = new ComboBox(instructionMenuItemList)
+  instructionSelection.value = instructionSelection.items()(0)
 
   //TODO Make these locations relative to the size of the screen
   //Set up selection menu
@@ -330,12 +331,20 @@ object InputManager {
 
   //Tells the simulation manager to run an entire instruction
   def run() {
-    SimulationManager.runInstruction(0)
+    var num = 0
+    for (i <- 0 until instructions.length)
+      if (instructions(i).name == instructionSelection.value.value)
+        num = i
+    SimulationManager.runInstruction(num)
   }
 
   //Tells simulation manager to complete one step of an instruction
   def stepForwardPressed() {
-    SimulationManager.stepInstruction(0)
+    var num = 0
+    for (i <- 0 until instructions.length)
+      if (instructions(i).name == instructionSelection.value.value)
+        num = i
+    SimulationManager.stepInstruction(num)
   }
 
   //Tells simulation manager to go back to the previous instruction step

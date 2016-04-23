@@ -408,9 +408,9 @@ object LC2200Simulator extends JFXApp {
     children += InputManager.stepBackward
     children += InputManager.reset
     children += InputManager.instructionSelection
+    children += InputManager.rdtextbox
     children += InputManager.sr1textbox
     children += InputManager.sr2textbox
-    children += InputManager.rdtextbox
     children += InputManager.execute
     children += InputManager.stepCounter
   }

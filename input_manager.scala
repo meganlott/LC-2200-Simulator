@@ -21,6 +21,7 @@ import scalafx.collections.ObservableBuffer
 import scalafx.beans.property.{StringProperty}
 import scala.collection.mutable.ArrayBuffer
 import scala.util.matching.Regex
+import javafx.beans.value.{ChangeListener, ObservableValue}
 
 object InputManager {
 //Top panel input
@@ -60,8 +61,6 @@ object InputManager {
     }
 
   // Instruction drop down menu
-  //TODO make this actually functional
-  val instructionMenu = new Menu("Add")
   var instructionMenuItemList = List[String]()
 
   //Dynamically update names based on the file system
@@ -89,6 +88,11 @@ object InputManager {
     sr1textbox.maxWidth = 50
     sr1textbox.layoutX = 530
     sr1textbox.layoutY = 60
+    sr1textbox.focused.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.Boolean], oldVal: java.lang.Boolean, newVal: java.lang.Boolean) => val t = validateRegisters() }
+    //= (e:ActionEvent) => {
+    //  validateRegisters()
+     // println("test")
+    //}
 
   // second register input
   val sr2textbox = new TextField
@@ -100,6 +104,8 @@ object InputManager {
     sr2textbox.layoutX = 590
     sr2textbox.layoutY = 60
 
+    sr2textbox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegisters() }
+
  // third register input
   val rdtextbox = new TextField
     rdtextbox.promptText = "RD"
@@ -109,6 +115,9 @@ object InputManager {
     rdtextbox.maxWidth = 50
     rdtextbox.layoutX = 470
     rdtextbox.layoutY = 60
+  
+    rdtextbox.focused.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.Boolean], oldVal: java.lang.Boolean, newVal: java.lang.Boolean) => val t = validateRegisters() }
+
 
   // execute instruction button
   val execute = new Button("Execute")
@@ -117,11 +126,12 @@ object InputManager {
     );
     execute.layoutX = 655
     execute.layoutY = 60
+    execute.setDisable(true)
     execute.setMinWidth(120)
     execute.onAction = (e:ActionEvent) => {
       run()
     }
-  val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, sr1textbox, sr2textbox, sr1textbox, execute)
+  //val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, sr1textbox, sr2textbox, sr1textbox, execute)
 
   var stepCounter = new Text {
     x = 800
@@ -234,6 +244,7 @@ object InputManager {
   val leftPaneInputs = Array(scrollpane1, regAddrBox, regValBox, setReg,
     scrollpane2, memAddrBox, memValBox, setMem)
 
+
   //Functions
 
   //Enables/Disables the proper buttons when the user starts stepping through a function
@@ -246,12 +257,48 @@ object InputManager {
     stepForward.setDisable(true)
   }
 
+  def toggleExecute(on : Boolean) {
+    execute.setDisable(on)
+  }
+
   def resetButtons() {
     stepBackward.setDisable(true)
     stepForward.setDisable(false)
     reset.setDisable(true)
   }
-  
+
+  //checks all register input text boxes to see if they have input
+  def validateRegisters() : Boolean =  {
+    println("validating in theory")
+    val invalidReg = ( (getRegisterInput("sr1") == -1) || (getRegisterInput("sr2") == -1) || (getRegisterInput("rd") == -1))
+    if (!invalidReg) {
+      execute.setDisable(false)
+      println("Valid register input")
+    } else {
+      execute.setDisable(true)
+    }
+
+      //sr1 input invalid. Considers empty to be valid entry
+      if ((rawRegisterInput("sr1").length() > 0) && getRegisterInput("sr1") == -1) {
+          println("s12 invalid")
+          sr1textbox.setTooltip(new Tooltip("Please enter a valid register name" ))
+          //sr1textbox.tooltip.isActivated = true
+      }
+
+      //sr2 input invalid. Considers empty to be valid entry
+      if ((rawRegisterInput("sr2").length() > 0) && getRegisterInput("sr2") == -1) {
+          println("sr2 invalid")
+          sr2textbox.setTooltip(new Tooltip("Please enter a valid register name" ))
+      }
+
+      //rd input invalid. Considers empty to be valid entry
+      if ((rawRegisterInput("rd").length() > 0) && getRegisterInput("rd") == -1) {
+          println("sr2 invalid")
+          rdtextbox.setTooltip(new Tooltip("Please enter a valid register" ))
+      }
+
+   return !invalidReg 
+  }
 
   //Takes in an integer value and formats it for the UI
   def formatInt( i: Int) : String = {
@@ -270,7 +317,7 @@ object InputManager {
   } 
 
 
-  //takes in string specifying x,y,or z, returns the raw input currently in that register
+  //takes in string specifying sr1,sr2,or sr3, returns the raw input currently in that register
   def rawRegisterInput(reg : String ) : String = {
     reg.toLowerCase()
     var selected = new TextField
@@ -300,6 +347,8 @@ object InputManager {
   def getRegisterInput(reg : String) : Int = {
     val str = rawRegisterInput(reg)
     println(str)
+    val input = parseRegisterInput(str)
+    
     return parseRegisterInput(str)
   }
 
@@ -330,12 +379,20 @@ object InputManager {
 
   //Tells the simulation manager to run an entire instruction
   def run() {
-    SimulationManager.runInstruction(0)
+    if (validateRegisters()) {
+      SimulationManager.runInstruction(0)
+    }
   }
 
   //Tells simulation manager to complete one step of an instruction
   def stepForwardPressed() {
-    SimulationManager.stepInstruction(0)
+    //println("printing works")
+    if (validateRegisters()) {
+      SimulationManager.stepInstruction(0)
+    } else {
+      //TODO handle error
+      return
+    }
   }
 
   //Tells simulation manager to go back to the previous instruction step
@@ -346,6 +403,7 @@ object InputManager {
 
   def resetPressed() {
     //TODO
+    resetButtons();
     println("reset")
   }
 

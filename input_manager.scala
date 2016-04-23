@@ -30,6 +30,7 @@ object InputManager {
     stepForward.setTooltip(
     new Tooltip("Simulates one clock cycle.")
     );
+    stepForward.setDisable(true)
     stepForward.layoutX = 150
     stepForward.layoutY = 60
     stepForward.setMinWidth(120)
@@ -89,7 +90,7 @@ object InputManager {
     sr1textbox.maxWidth = 50
     sr1textbox.layoutX = 530
     sr1textbox.layoutY = 60
-    sr1textbox.focused.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.Boolean], oldVal: java.lang.Boolean, newVal: java.lang.Boolean) => val t = validateRegisters() }
+    sr1textbox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegisters() }
     //= (e:ActionEvent) => {
     //  validateRegisters()
      // println("test")
@@ -117,7 +118,7 @@ object InputManager {
     rdtextbox.layoutX = 470
     rdtextbox.layoutY = 60
   
-    rdtextbox.focused.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.Boolean], oldVal: java.lang.Boolean, newVal: java.lang.Boolean) => val t = validateRegisters() }
+    rdtextbox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegisters() }
 
 
   // execute instruction button
@@ -203,20 +204,25 @@ object InputManager {
   regAddrBox.maxWidth = 100
   regAddrBox.layoutX = 20
   regAddrBox.layoutY = 260
+  regAddrBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegVal() }
+
   val regValBox = new TextField
   regValBox.promptText = "Value"
   regValBox.setTooltip(new Tooltip("Enter a value to set register value"));
   regValBox.maxWidth = 100
   regValBox.layoutX = 20
   regValBox.layoutY = 290
+  regValBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegVal() }
+
   // set reg button
   val setReg = new Button("Set Reg")
   setReg.setTooltip(new Tooltip("Set register value."));
   setReg.layoutX = 20
   setReg.layoutY = 320
   setReg.setMinWidth(120)
+  setReg.setDisable(true)
   setReg.onAction = (e:ActionEvent) => {
-    updateReg(Integer.parseInt(regAddrBox.text(), 16), Integer.parseInt(regValBox.text(), 16))
+    updateReg(parseRegMemInput(regAddrBox.text()), parseRegMemInput(regValBox.text()))
   }
 
  // mem edit input
@@ -226,20 +232,27 @@ object InputManager {
   memAddrBox.maxWidth = 100
   memAddrBox.layoutX = 20
   memAddrBox.layoutY = 590
+  memAddrBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateMemVal() }
+
+
   val memValBox = new TextField
   memValBox.promptText = "Value"
   memValBox.setTooltip(new Tooltip("Enter a value to set memory value"));
   memValBox.maxWidth = 100
   memValBox.layoutX = 20
   memValBox.layoutY = 620
+  memValBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateMemVal() }
+
   // set mem button
   val setMem = new Button("Set Mem")
   setMem.setTooltip(new Tooltip("Set memory value."));
   setMem.layoutX = 20
   setMem.layoutY = 650
   setMem.setMinWidth(120)
+  setMem.setDisable(true)
   setMem.onAction = (e:ActionEvent) => {
-    updateMem(Integer.parseInt(memAddrBox.text(), 16), Integer.parseInt(memValBox.text(), 16))
+    //TODO fix
+    updateMem(parseRegMemInput(memAddrBox.text()), parseRegMemInput(memValBox.text()))
   }
 
   val leftPaneInputs = Array(scrollpane1, regAddrBox, regValBox, setReg,
@@ -270,35 +283,120 @@ object InputManager {
 
   //checks all register input text boxes to see if they have input
   def validateRegisters() : Boolean =  {
-    println("validating in theory")
     val invalidReg = ( (getRegisterInput("sr1") == -1) || (getRegisterInput("sr2") == -1) || (getRegisterInput("rd") == -1))
     if (!invalidReg) {
+      //registers all are good
       execute.setDisable(false)
-      println("Valid register input")
+      stepForward.setDisable(false)
     } else {
       execute.setDisable(true)
+      stepForward.setDisable(true)
     }
 
       //sr1 input invalid. Considers empty to be valid entry
       if ((rawRegisterInput("sr1").length() > 0) && getRegisterInput("sr1") == -1) {
           println("s12 invalid")
           sr1textbox.setTooltip(new Tooltip("Please enter a valid register name" ))
+          sr1textbox.setStyle("-fx-border-color:red;")
           //sr1textbox.tooltip.isActivated = true
+      } else {
+          sr1textbox.setStyle("-fx-border-color:none;")
       }
 
       //sr2 input invalid. Considers empty to be valid entry
       if ((rawRegisterInput("sr2").length() > 0) && getRegisterInput("sr2") == -1) {
           println("sr2 invalid")
           sr2textbox.setTooltip(new Tooltip("Please enter a valid register name" ))
+          sr2textbox.setStyle("-fx-border-color:red;")
+          //sr1textbox.tooltip.isActivated = true
+      } else { 
+          sr2textbox.setStyle("-fx-border-color:none;")
       }
+
 
       //rd input invalid. Considers empty to be valid entry
       if ((rawRegisterInput("rd").length() > 0) && getRegisterInput("rd") == -1) {
           println("sr2 invalid")
           rdtextbox.setTooltip(new Tooltip("Please enter a valid register" ))
+          rdtextbox.setStyle("-fx-border-color:red;")
+          //sr1textbox.tooltip.isActivated = true
+      } else {
+          rdtextbox.setStyle("-fx-border-color:none;")
       }
 
+
    return !invalidReg 
+  }
+
+  //converts proper mem/reg value input or returns -1
+  def parseRegMemInput(str: String) : Int = {
+      //regex for a hexstring
+      val pattern = new Regex("^0x((A|B|C|D|E|F)|\\d){4}$")
+      var matched = (pattern findAllIn str).mkString("")
+      if (matched.length == 0) {
+        //test for regular int
+        val otherPattern = new Regex("^[r|R]{0,1}\\d+$")
+        val pureDigit = new Regex("\\d+")
+        matched = (pureDigit findAllIn str).mkString("")
+        if ((otherPattern findAllIn str).length != 1) {
+          //error from both
+          return -1
+        } else {
+          return Integer.parseInt(matched, 10)
+        }
+      }
+      //found a hex string
+      return convertHexString(matched)
+  }
+
+  def validateMemReg(addrBox: TextField, valBox: TextField, btn: Button, name: String) : Boolean = {
+      println("validation")
+      val addrInput = addrBox.text()
+      val valInput = valBox.text()
+      val addr = parseRegMemInput(addrInput)
+      val value = parseRegMemInput(valInput)
+      
+      println(addr)
+      println(value)
+
+      if ((addr == -1) || (value == -1)) {
+        //invalid input
+        btn.setDisable(true)
+      } else {
+        //input valid
+        btn.setDisable(false)
+      }
+
+      //address input invalid. Considers empty to be valid entry
+      if ((addrInput.length() > 0) && (addr == -1)) {
+          println("memory address invalid")
+          addrBox.setTooltip(new Tooltip("Please enter a valid address" ))
+          addrBox.setStyle("-fx-border-color:red;")
+      } else {
+          addrBox.setStyle("-fx-border-color:none;")
+      }
+
+      //value input invalid. Considers empty to be valid entry
+      if ((valInput.length() > 0) && (value == -1)) {
+          println("memory address invalid")
+          valBox.setTooltip(new Tooltip("Please enter a valid value") )
+          valBox.setStyle("-fx-border-color:red;")
+      } else {
+          valBox.setStyle("-fx-border-color:none;")
+      }
+
+      return false
+
+  }
+
+  //checks both memory update values for a correct input
+  def validateMemVal() : Boolean = {
+    return validateMemReg(memAddrBox, memValBox,setMem, "memory")
+  }
+
+  //checks both register update values for correct input
+  def validateRegVal() : Boolean =  {
+      return validateMemReg(regAddrBox, regValBox, setReg, "register")
   }
 
   //Takes in an integer value and formats it for the UI
@@ -333,9 +431,9 @@ object InputManager {
 
   //parses register input text values
   def parseRegisterInput(input : String ) : Int = {
-    val pattern = new Regex("\\d")
+    val pattern = new Regex("\\d+")
     val matched = (pattern findAllIn input)
-    if (matched.length != 1) {
+    if (matched.length <= 0) {
       //TODO Handle error
       return -1
     }
@@ -347,7 +445,6 @@ object InputManager {
   //of that register
   def getRegisterInput(reg : String) : Int = {
     val str = rawRegisterInput(reg)
-    println(str)
     val input = parseRegisterInput(str)
     
     return parseRegisterInput(str)

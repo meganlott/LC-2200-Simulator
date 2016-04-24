@@ -9,7 +9,7 @@ object SimulationManager {
   var currentStep = 0
   // this is the update order of the datapath, so the order is very important
   // this is not the right way to do this
-  val possibleSignals = List("UseSR2Hack", "LdPC", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "DrALU", "Din", "WrREG", "DrREG", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
+  val possibleSignals = List("UseSR2Hack", "LdPC", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "DrALU", "Din", "WrREG", "DrREG", "UseDESTHack", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
 
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
@@ -23,23 +23,26 @@ object SimulationManager {
     // first make sure regs is outputing right info
     var useSR2insteadOfSR1 = false
     DataPath.components("sign\nextend").setOutputData(InputManager.getRegisterInput("sr2").toShort)
-    def updateRegOutput() = {
+    def updateRegAndMemOutput() = {
       val output = (
         if (useSR2insteadOfSR1)
           InputManager.getRegVal( InputManager.getRegisterInput("sr2") )
+        else if (step("UseDESTHack"))
+          InputManager.getRegVal( InputManager.getRegisterInput("rd") )
         else
           InputManager.getRegVal( InputManager.getRegisterInput("sr1") )
         ).toShort
       DataPath.components("registers").setOutputData(output)
+      DataPath.components("memory\n2^32 x\n32 bits").setOutputData(InputManager.getMemVal(DataPath.components("memory\n2^32 x\n32 bits").readInputData()(0)).toShort)
       output
     }
-    updateRegOutput()
+    updateRegAndMemOutput()
     for( key <- possibleSignals;
          value = step(key)) {
       if (key == "UseSR2Hack") {
         useSR2insteadOfSR1 = value
         println("USE SR2 INSTEAD OF SR1: " + value)
-        updateRegOutput()
+        updateRegAndMemOutput()
       } else {
         def activateFunc(inputs: Array[Short]) = {
           if (key == "ALUFunc") {
@@ -54,13 +57,16 @@ object SimulationManager {
             }
           } else if (key == "WrREG") {
             InputManager.updateReg(InputManager.getRegisterInput("rd") ,inputs(0))
-            updateRegOutput()
+            updateRegAndMemOutput()
+          } else if (key == "WrMEM") {
+            InputManager.updateMem(inputs(0),inputs(1))
+            updateRegAndMemOutput()
           } else {
             inputs(0)
           }
         }.toShort
         // not one of our extra information signals
-        if (key != "ALUadd" && key != "ALUnand") {
+        if (key != "ALUadd" && key != "ALUnand" && key != "UseDESTHack") {
           if (value) {
             DataPath.activate(key, activateFunc)
             println("Activating " + key)

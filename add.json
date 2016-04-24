@@ -11,6 +11,7 @@
     },
     {
         "ALUFunc" : true,
+        "ALUadd" : true,
         "DrALU" : true,
         "WrREG" : true
     }

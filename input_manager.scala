@@ -265,7 +265,16 @@ object InputManager {
   def startStepThrough() {
     stepBackward.setDisable(false)
     reset.setDisable(false)
+    execute.setDisable(true)
   } 
+
+  def startExecute() {
+    stepForward.setDisable(true)
+  }
+
+  def endExecute() {
+    stepForward.setDisable(false)
+  }
 
   def endStepThrough() {
     stepForward.setDisable(true)
@@ -279,6 +288,7 @@ object InputManager {
     stepBackward.setDisable(true)
     stepForward.setDisable(false)
     reset.setDisable(true)
+    execute.setDisable(false)
   }
 
   //checks all register input text boxes to see if they have input

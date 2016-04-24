@@ -384,6 +384,10 @@ object LC2200Simulator extends JFXApp {
 
     val signEx = new RectComp(xBasis + 5, 200, 60, 50, "sign\nextend");
     //signEx.outputToBus()
+    val signDrive = new TriComp(xBasis+40, 270, 30, 30, "DrIFF")
+    signDrive.inputToComponent(signEx)
+    signDrive.outputToBus()
+    signDrive.createActivator("DrOFF", -1)
     
     val eqZero = new RectComp(100, 360, 40, 30, "=0?");
     //eqZero.inputToBus()

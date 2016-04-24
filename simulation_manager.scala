@@ -9,7 +9,7 @@ object SimulationManager {
   var currentStep = 0
   // this is the update order of the datapath, so the order is very important
   // this is not the right way to do this
-  val possibleSignals = List("UseSR2Hack", "LdPC", "DrPC", "ALUFunc", "DrALU", "Din", "WrREG", "DrREG", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
+  val possibleSignals = List("UseSR2Hack", "LdPC", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "DrALU", "Din", "WrREG", "DrREG", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
 
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
@@ -17,10 +17,12 @@ object SimulationManager {
     if (!currentInstruction.isDefined || currentInstruction.get != instructions(i)) {
       currentInstruction = Some(instructions(i))
       currentStep = 0
+      InputManager.startStepThrough()
     }
     var step = currentInstruction.get.getSignals(currentStep) //get all signals for step 0 of add
     // first make sure regs is outputing right info
     var useSR2insteadOfSR1 = false
+    DataPath.components("sign\nextend").setOutputData(InputManager.getRegisterInput("sr2").toShort)
     def updateRegOutput() = {
       val output = (
         if (useSR2insteadOfSR1)
@@ -41,7 +43,15 @@ object SimulationManager {
       } else {
         def activateFunc(inputs: Array[Short]) = {
           if (key == "ALUFunc") {
-            inputs.reduceLeft((j,k)=>(j+k).toShort)
+            if (step("ALUadd"))
+              inputs.reduceLeft((j,k)=>(j+k).toShort)
+            else if (step("ALUnand"))
+              (~(inputs(0)&inputs(1))).toShort
+            else {
+              println("BAD INSTRUCTION")
+              println(step)
+              0
+            }
           } else if (key == "WrREG") {
             InputManager.updateReg(InputManager.getRegisterInput("rd") ,inputs(0))
             updateRegOutput()
@@ -49,11 +59,14 @@ object SimulationManager {
             inputs(0)
           }
         }.toShort
-        if (value) {
-          DataPath.activate(key, activateFunc)
-          println("Activating " + key)
-        } else
-          DataPath.deactivate(key)
+        // not one of our extra information signals
+        if (key != "ALUadd" && key != "ALUnand") {
+          if (value) {
+            DataPath.activate(key, activateFunc)
+            println("Activating " + key)
+          } else
+            DataPath.deactivate(key)
+        }
       }
     }
     // at the end, make sure the ALU is updated
@@ -65,10 +78,12 @@ object SimulationManager {
       currentInstruction = None
       currentStep = 0
       InputManager.updateStep(0);
+      InputManager.resetButtons()
     }
   }
   def runInstruction(i: Int) {
     println("Exectute pressed")
+    InputManager.startExecute()
     stepInstruction(i)
     Future {
       while (currentInstruction.isDefined) {
@@ -78,6 +93,7 @@ object SimulationManager {
       Thread sleep waitTime
       DataPath.deactivateAll()
     }
+    InputManager.endExecute()
   }
 }
 

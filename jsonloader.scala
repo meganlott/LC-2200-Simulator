@@ -4,7 +4,8 @@ import scala.collection.mutable.ArrayBuffer
 class JsonLoader {
   var instructions : ArrayBuffer[Instruction] = ArrayBuffer()
   def loadFile(file : String) {
-    val txt = io.Source.fromFile(file)
+
+    val txt = io.Source.fromFile("instructions/"+file)
     val lines = try txt.mkString finally txt.close()
     parseFile(lines)
   }

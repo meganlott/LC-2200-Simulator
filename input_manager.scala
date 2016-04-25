@@ -23,6 +23,11 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.matching.Regex
 import javafx.beans.value.{ChangeListener, ObservableValue}
 
+/**
+* InputManager. Object to handle user input and validation
+* @author Sarah Alsmiller
+*
+*/ 
 object InputManager {
 //Top panel input
   //Forward button
@@ -76,7 +81,6 @@ object InputManager {
   val instructionSelection = new ComboBox(instructionMenuItemList)
   instructionSelection.value = instructionSelection.items()(0)
 
-  //TODO Make these locations relative to the size of the screen
   //Set up selection menu
   instructionSelection.layoutX = 300
   instructionSelection.layoutY = 58
@@ -133,7 +137,6 @@ object InputManager {
     execute.onAction = (e:ActionEvent) => {
       run()
     }
-  //val topPaneInputs = Array(stepForward, stepBackward, instructionMenu, sr1textbox, sr2textbox, sr1textbox, execute)
 
   var stepCounter = new Text {
     x = 800
@@ -153,6 +156,7 @@ object InputManager {
 
 //Left panel inputs
   val scrollpane1 : ScrollPane = new ScrollPane 
+    //Displays the values currently stored in the registers
     val regData = new ObservableBuffer[RegInfo]()
     regData.addAll(RegInfo("R0","0x0000"),
         RegInfo("R1","0x0001"),
@@ -176,6 +180,7 @@ object InputManager {
     scrollpane1.layoutY = 50
     
   val scrollpane2 : ScrollPane = new ScrollPane 
+    //displays the values currently stored in memory
     val memData = new ObservableBuffer[MemInfo]()
     memData.addAll(MemInfo("0x0000","0x0000"),
         MemInfo("0x0001","0x0001"),
@@ -263,29 +268,56 @@ object InputManager {
 
   //Functions
 
-  //Enables/Disables the proper buttons when the user starts stepping through a function
+  /** 
+   * Enables/Disables the proper buttons when 
+   * the user starts stepping through a function
+   * @return no return
+   */
   def startStepThrough() {
     stepBackward.setDisable(false)
     reset.setDisable(false)
     execute.setDisable(true)
   } 
 
+  /** 
+   * Disables the step forward button
+   * @return no return
+   */
   def startExecute() {
     stepForward.setDisable(true)
   }
 
+  /** 
+   * Enables the step forward button
+   * @return no return
+   */
   def endExecute() {
     stepForward.setDisable(false)
   }
 
+  /** 
+   * Disables step forward
+   * @return no return
+   */
   def endStepThrough() {
     stepForward.setDisable(true)
   }
 
+  /** 
+   * Disables or enables execute
+   * @param arg A boolean specifying True to disable execute
+   * false to enable
+   * @return no return
+   */
   def toggleExecute(on : Boolean) {
     execute.setDisable(on)
   }
 
+  /** 
+   * Disables and enables the appropriate buttons after the instruction
+   * has been reset.
+   * @return no return
+   */
   def resetButtons() {
     stepBackward.setDisable(true)
     stepForward.setDisable(false)
@@ -293,7 +325,12 @@ object InputManager {
     execute.setDisable(false)
   }
 
-  //checks all register input text boxes to see if they have input
+  /** 
+   *   Checks all register input text boxes to see if they have valid input
+   *   Input is considered valid if getRegisterInput does not return -1
+   *   @return An boolean that returns true if the registers are valid
+   */
+
   def validateRegisters() : Boolean =  {
     val invalidReg = ( (getRegisterInput("sr1") == -1) || (getRegisterInput("sr2") == -1) || (getRegisterInput("rd") == -1))
     if (!invalidReg) {
@@ -340,7 +377,12 @@ object InputManager {
    return !invalidReg 
   }
 
-  //converts proper mem/reg value input or returns -1
+  /** 
+   *   Parses the input string for a hex string, an integer, or
+   *   a register name in the R(number) format
+   *   @param str A string containing the raw user input
+   *   @return An integer from the input string, or a -1 in case of error
+   */
   def parseRegMemInput(str: String) : Int = {
       //regex for a hexstring
       val pattern = new Regex("^0x((A|B|C|D|E|F)|\\d){4}$")
@@ -361,6 +403,17 @@ object InputManager {
       return convertHexString(matched)
   }
 
+  /** 
+   *   Runs validation functions on the inputed textfields, and disables or enables
+   *   the buttons  according to the validation results. Additionally highlights the
+   *   box with the user error. Validatation based on memory/register input fields
+   *   @param addrBox The textfield containing the address text field
+   *   @param valBox a textfield comtaining the value field
+   *   @param btn The button to disable or enable
+   *   @param name A string specifying whether the function is validating register
+   *    or memory values
+   *   @return A boolean that returns true if the input is valid
+   */
   def validateMemReg(addrBox: TextField, valBox: TextField, btn: Button, name: String) : Boolean = {
       println("validation")
       val addrInput = addrBox.text()
@@ -401,17 +454,28 @@ object InputManager {
 
   }
 
-  //checks both memory update values for a correct input
+  /** 
+   *   Checks memory inputs for valid input
+   *   @return An boolean mapped to if the memory input is valid
+   */
   def validateMemVal() : Boolean = {
     return validateMemReg(memAddrBox, memValBox,setMem, "memory")
   }
 
-  //checks both register update values for correct input
+  /** 
+   *   Checks all register inputs text to see if they have valid input
+   *   @return An boolean mapped to the input is valid
+   */
   def validateRegVal() : Boolean =  {
       return validateMemReg(regAddrBox, regValBox, setReg, "register")
   }
 
-  //Takes in an integer value and formats it for the UI
+  /** 
+   *   Takes in an integer and converts it into a hex string, formated
+   *   correctly for the user display
+   *   @param An integer value
+   *   @return A string properly formated for the memory register display
+   */
   def formatInt( i: Int) : String = {
       val hexstring = Integer.toHexString(i)
       var formatedString = "0x"
@@ -421,13 +485,23 @@ object InputManager {
       return formatedString + hexstring
     }
 
-//Takes in an integer location and an integer value then updates the memory location in
-  //datapathstate and the UI
+  /** 
+   *   Takes in an integer location and an integer value then updates the memory
+   *   location
+   *   @param an integer specifying the memory location
+   *   @param an integer specifying the memory value
+   *   @return No return
+   */
   def updateMem(location: Int, value: Int) {
     memData(location) = MemInfo(formatInt(location), formatInt(value))
   } 
 
-
+  /** 
+   *   Pulls the raw input from the specified register input text
+   *   @param A string specifying sr1, sr2, or rd. 
+   *   @return A string containing the raw value in the specified register or nothing
+   *   if paramater is invalid
+   */
   //takes in string specifying sr1,sr2,or sr3, returns the raw input currently in that register
   def rawRegisterInput(reg : String ) : String = {
     reg.toLowerCase()
@@ -436,57 +510,83 @@ object InputManager {
       case "sr1" => selected = sr1textbox
       case "sr2" => selected = sr2textbox
       case "rd" => selected = rdtextbox
-      case woah => return " "
+      case woah => return ""
     }
     return selected.text()
   }
 
-  //parses register input text values
+  /** 
+   *   Checks all register input text boxes to see if they have valid input
+   *   Input is considered valid if getRegisterInput does not return -1
+   *   @param A raw input string
+   *   @return An integer mapped to string if the input is valid, or -1 if it is not
+   */
   def parseRegisterInput(input : String ) : Int = {
     val pattern = new Regex("\\d+")
     val matched = (pattern findAllIn input)
     if (matched.length <= 0) {
-      //TODO Handle error
       return -1
     }
     val str = (pattern findAllIn input).mkString("")
     return Integer.parseInt(str, 10)
   }
   
-  //takes in a string with a register name and returns the integer value
-  //of that register
+  /** 
+   *   Grabs the input from the specified register and parses it
+   *   @param Register name
+   *   @return An integer mapped to the input is valid, returns -1 if invalid
+   */
   def getRegisterInput(reg : String) : Int = {
     val str = rawRegisterInput(reg)
     val input = parseRegisterInput(str)
-    
     return parseRegisterInput(str)
   }
 
-  //Retreives the value currently on the screen at memory location
+  /** 
+   *   Grabs the stored memory value
+   *   @param location, an integer mapped to the requested memory location
+   *   @return An integer value representing the number stored at that memory location
+   */
   def getMemVal(location: Int) :  Int = {
     var value = memData(location).mem
     return convertHexString(value)
   }
 
-  //Takes in an integer location and an integer value then updates register location in
-  //datapathstate and the UI
+  /** 
+   *   Updates the value stored at a register location
+   *   @param location, an integer mapped to the requested memory location
+   *   @param value, the value to be stored at the register location
+   *   @return No return
+   */
   def updateReg(location: Int, value: Int) {
     regData(location) = RegInfo("R" + location.toString(), formatInt(value))
   }
 
-  //Retreives the value currently on the screen at the register location
+  /** 
+   *   Grabs the stored register value
+   *   @param location, an integer mapped to the requested memory location
+   *   @return An integer value representing the number stored at that register location
+   */
   def getRegVal(location: Int) : Int  =  {
     var value = regData(location).mem
     return convertHexString(value)
   }
 
-  //Parse UI string value
+  /** 
+   *   Unformats the UI formated hex string and converts it to an int
+   *   @param str, A string formated in the UI value
+   *   @return the converted integer value
+   */
   def convertHexString(str: String) : Int = {
     val l = str.length()
     var sub = str.substring(2, str.length() )
     return Integer.parseInt(sub, 16)
   }
 
+  /** 
+   *   Grabs the number of the current instruction
+   *   @return An integer representing the current instruction number
+   */
   def currentInstructionNum(): Int = {
     var num = 0
     for (i <- 0 until instructions.length)
@@ -494,6 +594,12 @@ object InputManager {
         num = i
     return num
   }
+
+  /** 
+   *   Grabs the number of the passed in instruction
+   *   @param ins, Instruction, the instruction you need the number for
+   *   @return An integer value representing the number for that instruction
+   */
   def thisInstructionNum(ins: Instruction): Int = {
     var num = 0
     for (i <- 0 until instructions.length)
@@ -502,17 +608,26 @@ object InputManager {
     return num
   }
 
-  //Tells the simulation manager to run an entire instruction
+  /** 
+   *   Tells the simulation manager to run a given instruction
+   *   @return No return value
+   */
   def run() {
     SimulationManager.runInstruction(currentInstructionNum())
   }
 
-  //Tells simulation manager to complete one step of an instruction
+  /** 
+   *   Tells the simulation manager to run one step of an instruction
+   *   @return No return value
+   */
   def stepForwardPressed() {
     SimulationManager.stepInstruction(currentInstructionNum())
   }
 
-  //Tells simulation manager to go back to the previous instruction step
+/** 
+   *   Tells the simulation manager to step backwards one step
+   *   @return No return value
+   */
   def stepBackwardPressed() {
     println("step backward pressed")
     val currentStep = SimulationManager.currentStep
@@ -521,6 +636,10 @@ object InputManager {
       SimulationManager.stepInstruction(currentInstructionNum())
   }
 
+  /** 
+   *   Tells the simulation manager to return to the begining of an instruction
+   *   @return No return value
+   */
   def resetPressed() {
     for (i <- 0 until regData.size())
       updateReg(i,i)
@@ -534,10 +653,5 @@ object InputManager {
       for (i <- 0 until ins.steps.length())
         SimulationManager.stepInstruction(thisInstructionNum(ins))
     }
-  }
-
-  //Retreives the name of the instruction currently selected in the instruction menu selection
-  def getSelectedInstruction() {
-    //TODO
   }
 }

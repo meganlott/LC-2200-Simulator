@@ -1,13 +1,21 @@
 {
     "instruction" : "jalr",
     "steps" : [ {
-        "LdPC" : true,
-        "DrREG" : true,
-        "UseSR2Hack" : true
+        "DrPC" : true,
+        "WrREG" : true,
+        "StoreSR1Hack" : true,
+        "LdA" : true
     },
     {
-        "LdB" : true,
-        "DrREG" : true
+        "UseDESTHack" : true,
+        "DrREG" : true,
+        "LdB" : true
+    },
+    {
+        "ALUFunc" : true,
+        "ALUadd" : true,
+        "DrALU" : true,
+        "LdPC" : true
     }
     ]
 }

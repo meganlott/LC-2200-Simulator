@@ -43,7 +43,8 @@ abstract class Component {
   }
 
   def setOutputData(data: Short) {
-    outWire.setValue(data)
+    if (outWire != null)
+      outWire.setValue(data)
   }
 
   def setNumberOfInputs(num: Int) {
@@ -54,9 +55,9 @@ abstract class Component {
   def getInputLocation(input: Int = 0): (Double, Double)
   def getOutputLocation(): (Double, Double)
 
-  def inputToBus(input: Int = 0) {
+  def inputToBus(input: Int = 0, top: Boolean = true) {
     val loc = getInputLocation(input)
-    inWires(input) = new RealWire(loc._1, DataPath.busTop, loc._1, loc._2)
+    inWires(input) = new RealWire(loc._1, if (top) DataPath.busTop else DataPath.busBottom, loc._1, loc._2)
     DataPath.bus.add(inWires(input))
   }
 
@@ -154,7 +155,7 @@ object DataPath {
   var components: Map[String, Component] = Map()
   var activators: Map[String, Activator] = Map()
 
-  val bus: WireSet = new WireSet()
+  val bus: WireSet = new WireSet(450,350)
 
   def activate(s: String, f: Array[Short]=>Short) {
     activators(s).s.setOutputData(f(activators(s).activate()))
@@ -326,13 +327,26 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
   }
 }
 
-class WireSet() extends Wire{
+class WireSet(val xin: Double, val yin: Double) extends Wire{
   val wires = new ArrayBuffer[Wire]();
+  var text = new Text {
+    x = xin
+    y = yin
+    text = "Value on bus: " + InputManager.formatInt(value)
+    font = Font.font(null, FontWeight.Bold, 18)
+    style = "-fx-font-size: 16pt"
+    //fill <== when (shape.hover) choose Red otherwise TRANSPARENT
+    //fill = Black
+  }
+  def finishSetup() {
+    DataPath.pane.children += text
+  }
 
   def setValue(v: Short) = {
     for (wire <- wires) {
       wire.setValue(v);
     }
+    text.text = "Value on bus: " + InputManager.formatInt(v)
   }
 
   def scale (s: Double)  = {
@@ -391,6 +405,7 @@ object LC2200Simulator extends JFXApp {
     
     children += r
 
+    DataPath.bus.finishSetup()
     DataPath.bus.add(new RealWire(20,20,720,20))
     DataPath.bus.add(new RealWire(20,20,20,320))
     DataPath.bus.add(new RealWire(20,320,720,320))
@@ -465,11 +480,14 @@ object LC2200Simulator extends JFXApp {
     signDrive.outputToBus()
     signDrive.createActivator("DrOFF", -1)
     
-    val eqZero = new RectComp(100, 360, 40, 30, "=0?");
-    //eqZero.inputToBus()
       
     val Z = new RectComp(100, 410, 40, 30, "Z");
-    Z.inputToComponent(eqZero)
+    //Z.inputToComponent(eqZero)
+    Z.inputToBus(0,false)
+    Z.createActivator("LdZ", -1)
+
+    val eqZero = new RectComp(100, 360, 40, 30, "=0?");
+    //eqZero.inputToBus()
 
   }
   //r.stroke = Red;

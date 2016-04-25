@@ -2,17 +2,33 @@
     "instruction" : "beq",
     "steps" : [ {
         "LdA" : true,
-        "DrREG" : true
+        "DrREG" : true,
+        "UseDESTHack" : true
     },
     {
-        "UseSR2Hack" : true,
         "LdB" : true,
         "DrREG" : true
     },
     {
         "ALUFunc" : true,
+        "ALUsub" : true,
         "DrALU" : true,
         "LdZ" : true
+    },
+    {
+        "DrPC" : true,
+        "LdA" : true
+    },
+    {
+        "UseSR2Hack" : true,
+        "LdB" : true,
+        "DrOFF" : true
+    },
+    {
+        "ALUFunc" : true,
+        "ALUadd" : true,
+        "DrALU" : true,
+        "LdPC" : true
     }
     ]
 }

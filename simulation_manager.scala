@@ -37,7 +37,7 @@ object SimulationManager {
         }
         ).toShort
       DataPath.components("registers").setOutputData(output)
-      DataPath.components("memory\n2^32 x\n32 bits").setOutputData(InputManager.getMemVal(DataPath.components("memory\n2^32 x\n32 bits").readInputData()(0)).toShort)
+      DataPath.components("memory\n2^16 x\n16 bits").setOutputData(InputManager.getMemVal(DataPath.components("memory\n2^16 x\n16 bits").readInputData()(0)).toShort)
       DataPath.components("sign\nextend").setOutputData(InputManager.getRegisterInput("sr2").toShort)
       output
     }

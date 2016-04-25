@@ -478,7 +478,7 @@ object LC2200Simulator extends JFXApp {
     val mar = new RectComp(xBasis, 50, 40, 30, "MAR");
     mar.inputToBus()
     mar.createActivator("LdMAR", -1)
-    val mem = new RectComp(xBasis, 120, 80, 100, "memory\n2^32 x\n32 bits");
+    val mem = new RectComp(xBasis, 120, 80, 100, "memory\n2^16 x\n16 bits");
     mem.setNumberOfInputs(2)
     mem.inputToBus(1)
     mem.inputToComponent(mar, 0)

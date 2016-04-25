@@ -356,8 +356,6 @@ class WireSet(val xin: Double, val yin: Double) extends Wire{
     text = "Value on bus: " + InputManager.formatInt(value)
     font = Font.font(null, FontWeight.Bold, 18)
     style = "-fx-font-size: 16pt"
-    //fill <== when (shape.hover) choose Red otherwise TRANSPARENT
-    //fill = Black
   }
   def finishSetup() {
     DataPath.pane.children += text
@@ -411,9 +409,6 @@ object LC2200Simulator extends JFXApp {
   }
 
   lazy val simulatorPane: Pane = new Pane {
-    //val graphic = new Image("file:lc2200datapath.png")
-    //val imgview = new ImageView(graphic)
-    //children += imgview
     
     val r = new Rectangle {
       x = 0
@@ -478,7 +473,7 @@ object LC2200Simulator extends JFXApp {
     val mar = new RectComp(xBasis, 50, 40, 30, "MAR");
     mar.inputToBus()
     mar.createActivator("LdMAR", -1)
-    val mem = new RectComp(xBasis, 120, 80, 100, "memory\n2^32 x\n32 bits");
+    val mem = new RectComp(xBasis, 120, 80, 100, "memory\n2^16 x\n16 bits");
     mem.setNumberOfInputs(2)
     mem.inputToBus(1)
     mem.inputToComponent(mar, 0)
@@ -497,7 +492,6 @@ object LC2200Simulator extends JFXApp {
     ir.createActivator("LdIR", -1)
 
     val signEx = new RectComp(xBasis + 5, 200, 60, 50, "sign\nextend");
-    //signEx.outputToBus()
     val signDrive = new TriComp(xBasis + 35, 270, 30, 30, "DrIFF")
     signDrive.inputToComponent(signEx)
     signDrive.outputToBus()
@@ -505,13 +499,10 @@ object LC2200Simulator extends JFXApp {
     
       
     val Z = new RectComp(100, 410, 40, 30, "Z");
-    //Z.inputToComponent(eqZero)
     Z.inputToBus(0,false)
     Z.createActivator("LdZ", -1)
 
     val eqZero = new RectComp(100, 360, 40, 30, "=0?");
-    //eqZero.inputToBus()
-
   }
 
   val startWidth = 1024
@@ -547,11 +538,6 @@ object LC2200Simulator extends JFXApp {
     title.layoutY = 0
     title.style = "-fx-font-size: 36pt"
     children += title
-
-    // I would like something like this but I can't get it to work
-    /*for ( i <- 0 to InputManager.topPaneInputs.length) {
-      children += InputManager.topPaneInputs(i)
-    }*/
 
     children += InputManager.stepForward
     children += InputManager.stepBackward

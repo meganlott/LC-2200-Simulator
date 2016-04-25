@@ -312,8 +312,12 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
   val shape = Line(sx, sy, ex, ey);
   shape.stroke = Black
   shape.strokeWidth = 3
+  val bounding = Rectangle(sx-6, sy-6, ex-sx+12, ey-sy+12);
+  bounding.stroke = TRANSPARENT
+  bounding.fill = TRANSPARENT
 
   DataPath.pane.children += shape
+  DataPath.pane.children += bounding
 
   var text = new Text {
     x = (sx+ex)/2 + 6
@@ -321,7 +325,7 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
     text = InputManager.formatInt(value)
     font = Font.font(null, FontWeight.Bold, 18)
     style = "-fx-font-size: 8pt"
-    fill <== when (shape.hover) choose Red otherwise TRANSPARENT
+    fill <== when (bounding.hover) choose Red otherwise TRANSPARENT
   }
   DataPath.pane.children += text
 
@@ -330,6 +334,10 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
     shape.startY = sy * s2
     shape.endX = ex * s
     shape.endY = ey * s2
+    bounding.x = (sx-6)*s
+    bounding.y = (sy-6)*s2
+    bounding.width = (ex-sx+12)*s
+    bounding.height = (ey-sy+12)*s2
     text.x = ((sx+ex)/2 + 6) * s
     text.y = ((sy+ey)/2 + 12) * s2
   }

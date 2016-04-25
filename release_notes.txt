@@ -1,0 +1,9 @@
+Announcing LC-2200 Simulator version 1.0
+
+Features Added:
+    Added fetch, beq, lw, sw, jalr, and other instructions
+    Added proper number of registers and memory entries
+    Added Step Backward and Reset functionality to the simulator
+    Simulator scales with window size
+Known Bugs:
+    Nand instruction can make a large enough value to crash the parser when read back.

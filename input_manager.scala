@@ -58,6 +58,7 @@ object InputManager {
 
   //reset button
   val reset = new Button("Reset")
+    reset.setTooltip(new Tooltip("Reset Simulation"))
     reset.layoutX = 20
     reset.layoutY = 90
     reset.setDisable(true)
@@ -165,7 +166,15 @@ object InputManager {
         RegInfo("R4","0x0004"),
         RegInfo("R5","0x0005"),
         RegInfo("R6","0x0006"),
-        RegInfo("R7","0x0007")
+        RegInfo("R7","0x0007"),
+        RegInfo("R8","0x0008"),
+        RegInfo("R9","0x0009"),
+        RegInfo("R10","0x000A"),
+        RegInfo("R11","0x000B"),
+        RegInfo("R12","0x000C"),
+        RegInfo("R13","0x000D"),
+        RegInfo("R14","0x000E"),
+        RegInfo("R15","0x000F")
         )
     val regTable = new TableView(regData)
     val col1 = new TableColumn[RegInfo, String]("Register")
@@ -182,15 +191,14 @@ object InputManager {
   val scrollpane2 : ScrollPane = new ScrollPane 
     //displays the values currently stored in memory
     val memData = new ObservableBuffer[MemInfo]()
-    memData.addAll(MemInfo("0x0000","0x0000"),
-        MemInfo("0x0001","0x0001"),
-        MemInfo("0x0002","0x0002"),
-        MemInfo("0x0003","0x0003"),
-        MemInfo("0x0004","0x0004"),
-        MemInfo("0x0005","0x0005"),
-        MemInfo("0x0006","0x0006"),
-        MemInfo("0x0007","0x0007")
-        )
+    //2^16 entries in memory
+    val numMemEntries = 65535
+    for (i <- 0 to numMemEntries) {
+      var str = Integer.toHexString(i)
+      while(str.length < 4) { str = "0"+str }
+      var hexstr = "0x"+str
+      memData.addAll(MemInfo(hexstr,hexstr))
+    }
 
     val memTable = new TableView(memData)
     val col3 = new TableColumn[MemInfo, String]("Address")

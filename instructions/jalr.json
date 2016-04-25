@@ -3,18 +3,11 @@
     "steps" : [ {
         "DrPC" : true,
         "WrREG" : true,
-        "StoreSR1Hack" : true,
-        "LdA" : true
+        "StoreSR1Hack" : true
     },
     {
         "UseDESTHack" : true,
         "DrREG" : true,
-        "LdB" : true
-    },
-    {
-        "ALUFunc" : true,
-        "ALUadd" : true,
-        "DrALU" : true,
         "LdPC" : true
     }
     ]

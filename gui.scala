@@ -82,7 +82,7 @@ abstract class Component {
     DataPath.addActivator(a)
   }
 
-  def scale(s: Double)
+  def scale(s: Double, s2: Double)
   //def getSceneComponent(): Node;
 }
 
@@ -105,7 +105,7 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
     fill = Black
   }
   
-  moveText(1.0)
+  moveText(1.0, 1.0)
   DataPath.pane.children += text
 
   def activate(): Array[Short] = {
@@ -118,14 +118,14 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
     text.fill = Black
   }
 
-  def moveText(sc: Double) {
+  def moveText(sc: Double, sc2: Double) {
     var offset = 12 * flip * sc;
     if (flip != 0) {
       offset = flip * 16;
       if (flip > 0) {
         offset += 3
       } else if (flip < 0) {
-        offset += 5
+        offset += 1
       }
     }
     val j: Double = text.getLayoutBounds().getWidth()
@@ -134,12 +134,15 @@ class Activator(val xx: Double, val yy: Double, val n: String, val s: Component,
     } else {
       text.x = xx*sc + offset*sc
     }
-
+    text.y = (yy + 3) * sc2
   }
-  def scale(sc: Double) {
+
+  def scale(sc: Double, sc2: Double) {
     shape.startX = xx*sc + 12 * flip * sc;
     shape.endX = xx*sc
-    moveText(sc)
+    shape.startY = yy * sc2
+    shape.endY = yy * sc2
+    moveText(sc, sc2)
   }
 }
 
@@ -184,7 +187,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
   shape.stroke = Black
   shape.strokeWidth = 2
 
-  var actDir = 0
+  var shiftText = false;
 
   var text = new Text {
     x = 0
@@ -209,29 +212,36 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
     return (x + w / 2, y + h)
   }
 
-  def scale(s: Double) {
-    text.x = (xx + w/2 - 3) * s - text.getLayoutBounds().getWidth()/2
-    shape.x = xx * s;
-    shape.width = s * w;
+  def scale(s: Double, s2: Double) {
+    text.x = (xx + w/2) * s - text.getLayoutBounds().getWidth()/2
+    if (!shiftText) {
+      text.y = (y + 20) * s2
+    } else {
+      text.y = (y + 40) * s2
+    }
+    shape.x = xx * s
+    shape.y = yy * s2
+    shape.width = s * w
+    shape.height = s2 * h
 
 
     for (wire <- inWires) {
       if (wire != null)
-        wire.scale(s)
+        wire.scale(s, s2)
     }
     if (outWire != null)
-      outWire.scale(s)
+      outWire.scale(s, s2)
 
-    for (a <- activators) { a.scale(s) }
+    for (a <- activators) { a.scale(s, s2) }
 
   }
 
   def createActivator(n: String, dir: Int) {
     var sx = x
-    actDir = dir
     if (dir > 0) {
       sx = x + w
     } else if (dir == 0) {
+      shiftText = true
       sx = getInputLocation(activators.size)._1 - 24
       text.y = y + 40
     }
@@ -268,8 +278,8 @@ class TriComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val 
     addActivator(a)
   }
 
-  def scale(s: Double) {
-    val temp = Polygon(xx*s-s*w/2,yy,xx*s+s*w/2,yy,xx*s,yy+h);
+  def scale(s: Double, s2: Double) {
+    val temp = Polygon(xx*s-s*w/2,yy*s2,xx*s+s*w/2,yy*s2,xx*s,yy*s2+h*s2);
     temp.fill = White
     temp.stroke = Black
     temp.strokeWidth = 2
@@ -279,11 +289,11 @@ class TriComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val 
 
     for (wire <- inWires) {
       if (wire != null)
-        wire.scale(s)
+        wire.scale(s, s2)
     }
     if (outWire != null)
-      outWire.scale(s)
-    for (a <- activators) { a.scale(s) }
+      outWire.scale(s, s2)
+    for (a <- activators) { a.scale(s, s2) }
   }
 }
 
@@ -295,15 +305,19 @@ abstract class Wire() {
   def getValue(): Short = {
     return value
   }
-  def scale(s: Double)
+  def scale(s: Double, s2: Double)
 }
 class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) extends Wire {
 
   val shape = Line(sx, sy, ex, ey);
   shape.stroke = Black
   shape.strokeWidth = 3
+  val bounding = Rectangle(sx-6, sy-6, ex-sx+12, ey-sy+12);
+  bounding.stroke = TRANSPARENT
+  bounding.fill = TRANSPARENT
 
   DataPath.pane.children += shape
+  DataPath.pane.children += bounding
 
   var text = new Text {
     x = (sx+ex)/2 + 6
@@ -311,14 +325,21 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
     text = InputManager.formatInt(value)
     font = Font.font(null, FontWeight.Bold, 18)
     style = "-fx-font-size: 8pt"
-    fill <== when (shape.hover) choose Red otherwise TRANSPARENT
+    fill <== when (bounding.hover) choose Red otherwise TRANSPARENT
   }
   DataPath.pane.children += text
 
-  def scale(s: Double) {
-    shape.startX = sx * s;
-    shape.endX = ex * s;
+  def scale(s: Double, s2: Double) {
+    shape.startX = sx * s
+    shape.startY = sy * s2
+    shape.endX = ex * s
+    shape.endY = ey * s2
+    bounding.x = (sx-6)*s
+    bounding.y = (sy-6)*s2
+    bounding.width = (ex-sx+12)*s
+    bounding.height = (ey-sy+12)*s2
     text.x = ((sx+ex)/2 + 6) * s
+    text.y = ((sy+ey)/2 + 12) * s2
   }
 
   def setValue(value: Short) = {
@@ -349,10 +370,12 @@ class WireSet(val xin: Double, val yin: Double) extends Wire{
     text.text = "Value on bus: " + InputManager.formatInt(v)
   }
 
-  def scale (s: Double)  = {
+  def scale (s: Double, s2: Double)  = {
     for (wire <- wires) {
-      wire.scale(s);
+      wire.scale(s, s2);
     }
+    text.x = xin*s
+    text.y = yin*s2
   }
 
   def add(wire: Wire): Wire = {
@@ -372,7 +395,7 @@ case class MemInfo(addr:String, mem:String)
 object LC2200Simulator extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
-    width = 960
+    width = 1024
     height = 840
     scene = new Scene(new javafx.scene.Scene(root))
   }
@@ -475,7 +498,7 @@ object LC2200Simulator extends JFXApp {
 
     val signEx = new RectComp(xBasis + 5, 200, 60, 50, "sign\nextend");
     //signEx.outputToBus()
-    val signDrive = new TriComp(xBasis+40, 270, 30, 30, "DrIFF")
+    val signDrive = new TriComp(xBasis + 35, 270, 30, 30, "DrIFF")
     signDrive.inputToComponent(signEx)
     signDrive.outputToBus()
     signDrive.createActivator("DrOFF", -1)
@@ -490,9 +513,9 @@ object LC2200Simulator extends JFXApp {
     //eqZero.inputToBus()
 
   }
-  //r.stroke = Red;
+
   val startWidth = 1024
-  val startHeight = 768
+  val startHeight = 840
   var currWidth: Double = startWidth;
   var currHeight: Double = startHeight;
   val bgW = 720;
@@ -500,10 +523,22 @@ object LC2200Simulator extends JFXApp {
 
   stage.widthProperty.addListener{ (o: javafx.beans.value.ObservableValue[_ <: Number], oldVal: Number, newVal: Number) =>
     currWidth = newVal.doubleValue //newVal.toString().toDouble;
-    var scale = currWidth / startWidth;
-    if (scale < 1) { scale = 1 } 
-    for ((_, comp) <- DataPath.components) { comp.scale(scale) }
-    DataPath.bg.width = bgW*scale
+    scaleEverything()
+  }
+
+  stage.heightProperty.addListener{ (o: javafx.beans.value.ObservableValue[_ <: Number], oldVal: Number, newVal: Number) =>
+    currHeight = newVal.doubleValue //newVal.toString().toDouble;
+    scaleEverything()
+  }
+
+  def scaleEverything() {
+    var scalex = currWidth / startWidth;
+    var scaley = currHeight / startHeight;
+    if (scalex < 1) { scalex = 1 } 
+    if (scaley < 1) { scaley = 1 } 
+    for ((_, comp) <- DataPath.components) { comp.scale(scalex, scaley) }
+    DataPath.bg.width = bgW*scalex
+    DataPath.bg.height = bgH*scaley
   }
 
   lazy val topPane: Pane = new Pane {
@@ -550,7 +585,7 @@ object LC2200Simulator extends JFXApp {
     children += InputManager.setMem
 
     
-      }
+  }
 
   def newComponent(xx: Double, yy: Double) = {
     new Rectangle {
@@ -568,5 +603,4 @@ object LC2200Simulator extends JFXApp {
     stepForward.layoutY = 50
   }
   stage.getIcons().add(new Image("file:CPU.png"))
- 
 }

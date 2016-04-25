@@ -161,7 +161,15 @@ object InputManager {
         RegInfo("R4","0x0004"),
         RegInfo("R5","0x0005"),
         RegInfo("R6","0x0006"),
-        RegInfo("R7","0x0007")
+        RegInfo("R7","0x0007"),
+        RegInfo("R8","0x0008"),
+        RegInfo("R9","0x0009"),
+        RegInfo("R10","0x000A"),
+        RegInfo("R11","0x000B"),
+        RegInfo("R12","0x000C"),
+        RegInfo("R13","0x000D"),
+        RegInfo("R14","0x000E"),
+        RegInfo("R15","0x000F")
         )
     val regTable = new TableView(regData)
     val col1 = new TableColumn[RegInfo, String]("Register")

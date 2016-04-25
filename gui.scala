@@ -387,7 +387,7 @@ case class MemInfo(addr:String, mem:String)
 object LC2200Simulator extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
-    width = 960
+    width = 1024
     height = 840
     scene = new Scene(new javafx.scene.Scene(root))
   }
@@ -505,9 +505,9 @@ object LC2200Simulator extends JFXApp {
     //eqZero.inputToBus()
 
   }
-  //r.stroke = Red;
+
   val startWidth = 1024
-  val startHeight = 768
+  val startHeight = 840
   var currWidth: Double = startWidth;
   var currHeight: Double = startHeight;
   val bgW = 720;
@@ -515,17 +515,15 @@ object LC2200Simulator extends JFXApp {
 
   stage.widthProperty.addListener{ (o: javafx.beans.value.ObservableValue[_ <: Number], oldVal: Number, newVal: Number) =>
     currWidth = newVal.doubleValue //newVal.toString().toDouble;
-    var scalex = currWidth / startWidth;
-    var scaley = currHeight / startHeight;
-    if (scalex < 1) { scalex = 1 } 
-    if (scaley < 1) { scaley = 1 } 
-    for ((_, comp) <- DataPath.components) { comp.scale(scalex, scaley) }
-    DataPath.bg.width = bgW*scalex
-    DataPath.bg.height = bgH*scaley
+    scaleEverything()
   }
 
   stage.heightProperty.addListener{ (o: javafx.beans.value.ObservableValue[_ <: Number], oldVal: Number, newVal: Number) =>
     currHeight = newVal.doubleValue //newVal.toString().toDouble;
+    scaleEverything()
+  }
+
+  def scaleEverything() {
     var scalex = currWidth / startWidth;
     var scaley = currHeight / startHeight;
     if (scalex < 1) { scalex = 1 } 
@@ -579,7 +577,7 @@ object LC2200Simulator extends JFXApp {
     children += InputManager.setMem
 
     
-      }
+  }
 
   def newComponent(xx: Double, yy: Double) = {
     new Rectangle {
@@ -597,5 +595,4 @@ object LC2200Simulator extends JFXApp {
     stepForward.layoutY = 50
   }
   stage.getIcons().add(new Image("file:CPU.png"))
- 
 }

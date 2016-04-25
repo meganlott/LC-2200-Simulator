@@ -96,10 +96,6 @@ object InputManager {
     sr1textbox.layoutX = 530
     sr1textbox.layoutY = 60
     sr1textbox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegisters() }
-    //= (e:ActionEvent) => {
-    //  validateRegisters()
-     // println("test")
-    //}
 
   // second register input
   val sr2textbox = new TextField
@@ -117,7 +113,7 @@ object InputManager {
   val rdtextbox = new TextField
     rdtextbox.promptText = "RD"
     rdtextbox.setTooltip(
-    new Tooltip("Enter a register or numerical value up to (range?)")
+      new Tooltip("Enter a register or numerical value up to (range?)")
     );
     rdtextbox.maxWidth = 50
     rdtextbox.layoutX = 470

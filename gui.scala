@@ -396,7 +396,7 @@ object LC2200Simulator extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
     width = 1024
-    height = 840
+    height = 740
     scene = new Scene(new javafx.scene.Scene(root))
   }
   stage.minWidth = stage.width.get;
@@ -407,7 +407,7 @@ object LC2200Simulator extends JFXApp {
     top = topPane
     topPane.setMinHeight(100)
     left = leftPane
-    leftPane.setMinWidth(200)
+    leftPane.setMinWidth(250)
   }
 
   lazy val simulatorPane: Pane = new Pane {
@@ -515,7 +515,7 @@ object LC2200Simulator extends JFXApp {
   }
 
   val startWidth = 1024
-  val startHeight = 840
+  val startHeight = 740
   var currWidth: Double = startWidth;
   var currHeight: Double = startHeight;
   val bgW = 720;
@@ -567,11 +567,11 @@ object LC2200Simulator extends JFXApp {
   lazy val leftPane: Pane = new Pane {
     val regTableLabel = new Label("Register View")
       regTableLabel.layoutX = 20
-      regTableLabel.layoutY = 30
+      regTableLabel.layoutY = 10
       children += regTableLabel
     val memTableLabel = new Label("Memory View")
       memTableLabel.layoutX = 20
-      memTableLabel.layoutY = 350
+      memTableLabel.layoutY = 300
       children += memTableLabel
 
     //Adding left pane inputs

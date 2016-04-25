@@ -184,9 +184,9 @@ object InputManager {
     regTable.columns ++= List(col1, col2)
     scrollpane1.content = regTable
     scrollpane1.maxHeight = 200
-    scrollpane1.maxWidth = 160
+    scrollpane1.maxWidth = 210
     scrollpane1.layoutX = 20
-    scrollpane1.layoutY = 50
+    scrollpane1.layoutY = 30
     
   val scrollpane2 : ScrollPane = new ScrollPane 
     //displays the values currently stored in memory
@@ -208,9 +208,9 @@ object InputManager {
     memTable.columns ++= List(col3, col4)
     scrollpane2.content = memTable
     scrollpane2.maxHeight = 200
-    scrollpane2.maxWidth = 160
+    scrollpane2.maxWidth = 210
     scrollpane2.layoutX = 20
-    scrollpane2.layoutY = 380
+    scrollpane2.layoutY = 320
 
  // reg edit input
   val regAddrBox = new TextField
@@ -218,23 +218,23 @@ object InputManager {
   regAddrBox.setTooltip(new Tooltip("Enter an address to set register value"));
   regAddrBox.maxWidth = 100
   regAddrBox.layoutX = 20
-  regAddrBox.layoutY = 260
+  regAddrBox.layoutY = 235
   regAddrBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegVal() }
 
   val regValBox = new TextField
   regValBox.promptText = "Value"
   regValBox.setTooltip(new Tooltip("Enter a value to set register value"));
   regValBox.maxWidth = 100
-  regValBox.layoutX = 20
-  regValBox.layoutY = 290
+  regValBox.layoutX = 130
+  regValBox.layoutY = 235
   regValBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateRegVal() }
 
   // set reg button
   val setReg = new Button("Set Reg")
   setReg.setTooltip(new Tooltip("Set register value."));
   setReg.layoutX = 20
-  setReg.layoutY = 320
-  setReg.setMinWidth(120)
+  setReg.layoutY = 265
+  setReg.setMinWidth(210)
   setReg.setDisable(true)
   setReg.onAction = (e:ActionEvent) => {
     updateReg(parseRegMemInput(regAddrBox.text()), parseRegMemInput(regValBox.text()))
@@ -246,7 +246,7 @@ object InputManager {
   memAddrBox.setTooltip(new Tooltip("Enter an address to set memory value"));
   memAddrBox.maxWidth = 100
   memAddrBox.layoutX = 20
-  memAddrBox.layoutY = 590
+  memAddrBox.layoutY = 525
   memAddrBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateMemVal() }
 
 
@@ -254,16 +254,16 @@ object InputManager {
   memValBox.promptText = "Value"
   memValBox.setTooltip(new Tooltip("Enter a value to set memory value"));
   memValBox.maxWidth = 100
-  memValBox.layoutX = 20
-  memValBox.layoutY = 620
+  memValBox.layoutX = 130
+  memValBox.layoutY = 525
   memValBox.text.addListener{( O: javafx.beans.value.ObservableValue[_ <: java.lang.String], oldVal: java.lang.String, newVal: java.lang.String) => val t = validateMemVal() }
 
   // set mem button
   val setMem = new Button("Set Mem")
   setMem.setTooltip(new Tooltip("Set memory value."));
   setMem.layoutX = 20
-  setMem.layoutY = 650
-  setMem.setMinWidth(120)
+  setMem.layoutY = 555
+  setMem.setMinWidth(210)
   setMem.setDisable(true)
   setMem.onAction = (e:ActionEvent) => {
     //TODO fix

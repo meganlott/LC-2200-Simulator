@@ -138,12 +138,14 @@ object InputManager {
   var stepCounter = new Text {
     x = 800
     y = 80
-    text = "Step Counter: Done"
+    text = "Step Counter: No Instruction"
     style = "-fx-font-size: 10pt"
     fill = Black
   }
   def updateStep(step: Int) {
-    if (step == 0)
+    if (step == -1)
+      stepCounter.text = "Step Counter: No Instruction"
+    else if (step == 0)
       stepCounter.text = "Step Counter: Final Step"
     else
       stepCounter.text = "Step Counter: Step " + step
@@ -485,34 +487,53 @@ object InputManager {
     return Integer.parseInt(sub, 16)
   }
 
-  //Tells the simulation manager to run an entire instruction
-  def run() {
+  def currentInstructionNum(): Int = {
     var num = 0
     for (i <- 0 until instructions.length)
       if (instructions(i).name == instructionSelection.value.value)
         num = i
-    SimulationManager.runInstruction(num)
+    return num
+  }
+  def thisInstructionNum(ins: Instruction): Int = {
+    var num = 0
+    for (i <- 0 until instructions.length)
+      if (instructions(i) == ins)
+        num = i
+    return num
+  }
+
+  //Tells the simulation manager to run an entire instruction
+  def run() {
+    SimulationManager.runInstruction(currentInstructionNum())
   }
 
   //Tells simulation manager to complete one step of an instruction
   def stepForwardPressed() {
-    var num = 0
-    for (i <- 0 until instructions.length)
-      if (instructions(i).name == instructionSelection.value.value)
-        num = i
-    SimulationManager.stepInstruction(num)
+    SimulationManager.stepInstruction(currentInstructionNum())
   }
 
   //Tells simulation manager to go back to the previous instruction step
   def stepBackwardPressed() {
-    //TODO
     println("step backward pressed")
+    val currentStep = SimulationManager.currentStep
+    resetPressed()
+    for (i <- 0 until currentStep-1)
+      SimulationManager.stepInstruction(currentInstructionNum())
   }
 
   def resetPressed() {
-    //TODO
-    resetButtons();
-    println("reset")
+    for (i <- 0 until regData.size())
+      updateReg(i,i)
+    for (i <- 0 until memData.size())
+      updateMem(i,i)
+    resetButtons()
+    SimulationManager.resetInstructionSimulation(true)
+    var completedInstructionsFromBeginning = SimulationManager.completedInstructionsFromBeginning
+    SimulationManager.completedInstructionsFromBeginning = new ArrayBuffer[Instruction]()
+    for (ins <- completedInstructionsFromBeginning) {
+      for (i <- 0 until ins.steps.length())
+        SimulationManager.stepInstruction(thisInstructionNum(ins))
+    }
   }
 
   //Retreives the name of the instruction currently selected in the instruction menu selection

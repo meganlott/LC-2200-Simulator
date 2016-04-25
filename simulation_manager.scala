@@ -1,3 +1,4 @@
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
@@ -7,6 +8,7 @@ object SimulationManager {
   val instructions = loader.getInstructions() //get all instructions available
   var currentInstruction: Option[Instruction] = None
   var currentStep = 0
+  var completedInstructionsFromBeginning = new ArrayBuffer[Instruction]()
   // this is the update order of the datapath, so the order is very important
   // this is not the right way to do this
   val possibleSignals = List("UseSR2Hack", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "ALUsub", "ALUinc", "DrALU", "Din", "WrREG", "DrREG", "LdPC", "LdZ", "UseDESTHack", "StoreSR1Hack", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
@@ -77,7 +79,7 @@ object SimulationManager {
           }
         }.toShort
         // not one of our extra information signals
-        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "ALUinc" && key != "UseDESTHack" && key != "StoreSR1Hack") {
+        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "ALUinc" && key != "UseDESTHack" && key != "StoreSR1Hack" && key != "UseSR2Hack") {
           if (value) {
             DataPath.activate(key, activateFunc)
             println("Activating " + key)
@@ -92,10 +94,23 @@ object SimulationManager {
     println("step forward pressed")
     currentStep += 1
     if (currentStep == currentInstruction.get.steps.length() || (step("LdZ") && DataPath.components("Z").readInputData()(0) != 0)) {
-      currentInstruction = None
-      currentStep = 0
+      completedInstructionsFromBeginning.append(currentInstruction.get)
+      resetInstructionSimulation(false)
+    }
+  }
+  def resetInstructionSimulation(fullReset: Boolean) {
+    currentInstruction = None
+    currentStep = 0
+    InputManager.resetButtons()
+    if (fullReset) {
+      InputManager.updateStep(-1);
+      for( key <- possibleSignals) {
+        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "ALUinc" && key != "UseDESTHack" && key != "StoreSR1Hack" && key != "UseSR2Hack") {
+          DataPath.deactivate(key)
+        }
+      }
+    } else {
       InputManager.updateStep(0);
-      InputManager.resetButtons()
     }
   }
   def runInstruction(i: Int) {

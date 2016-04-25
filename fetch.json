@@ -1,0 +1,19 @@
+{
+    "instruction" : "fetch",
+    "steps" : [ {
+        "DrPC" : true,
+        "LdA" : true,
+        "LdMAR" : true
+    },
+    {
+        "ALUFunc" : true,
+        "ALUinc" : true,
+        "DrALU" : true,
+        "LdPC" : true
+    },
+    {
+        "DrMEM" : true,
+        "LdIR" : true
+    }
+    ]
+}

@@ -9,7 +9,7 @@ object SimulationManager {
   var currentStep = 0
   // this is the update order of the datapath, so the order is very important
   // this is not the right way to do this
-  val possibleSignals = List("UseSR2Hack", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "ALUsub", "DrALU", "Din", "WrREG", "DrREG", "LdPC", "LdZ", "UseDESTHack", "StoreSR1Hack", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
+  val possibleSignals = List("UseSR2Hack", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "ALUsub", "ALUinc", "DrALU", "Din", "WrREG", "DrREG", "LdPC", "LdZ", "UseDESTHack", "StoreSR1Hack", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
 
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
@@ -52,6 +52,8 @@ object SimulationManager {
           if (key == "ALUFunc") {
             if (step("ALUadd"))
               inputs.reduceLeft((j,k)=>(j+k).toShort)
+            else if (step("ALUinc"))
+              (inputs(0)+1).toShort
             else if (step("ALUsub"))
               (inputs(0)-inputs(1)).toShort
             else if (step("ALUnand"))
@@ -75,7 +77,7 @@ object SimulationManager {
           }
         }.toShort
         // not one of our extra information signals
-        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "UseDESTHack" && key != "StoreSR1Hack") {
+        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "ALUinc" && key != "UseDESTHack" && key != "StoreSR1Hack") {
           if (value) {
             DataPath.activate(key, activateFunc)
             println("Activating " + key)

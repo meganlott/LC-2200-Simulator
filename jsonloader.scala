@@ -34,6 +34,7 @@ class JsonLoader {
     loadFile("lw.json")
     loadFile("beq.json")
     loadFile("jalr.json")
+    loadFile("fetch.json")
   }
   
   /*

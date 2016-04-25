@@ -189,6 +189,7 @@ class RectComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val
     x = 0
     y = yy + 20
     text = name
+    font = Font.font(null, FontWeight.Thin, 12)
     style = "-fx-font-size: 12pt"
     fill = Black
   }
@@ -307,6 +308,7 @@ class RealWire(val sx: Double, val sy: Double, val ex: Double, val ey: Double) e
     x = (sx+ex)/2 + 6
     y = (sy+ey)/2 + 12
     text = InputManager.formatInt(value)
+    font = Font.font(null, FontWeight.Bold, 18)
     style = "-fx-font-size: 8pt"
     fill <== when (shape.hover) choose Red otherwise TRANSPARENT
   }
@@ -356,12 +358,13 @@ case class MemInfo(addr:String, mem:String)
 object LC2200Simulator extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     title.value = "LC-2200 Simulator"
-    width = 1024
-    height = 768
+    width = 960
+    height = 840
     scene = new Scene(new javafx.scene.Scene(root))
   }
+  stage.minWidth = stage.width.get;
+  stage.minHeight = stage.height.get;
 
-  
   lazy val root = new BorderPane{
     center = simulatorPane
     top = topPane

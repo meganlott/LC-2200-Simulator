@@ -10,9 +10,9 @@ object SimulationManager {
   var currentStep = 0
   var completedInstructionsFromBeginning = new ArrayBuffer[Instruction]()
   // this is the update order of the datapath, so the order is very important
-  // this is not the right way to do this
-  val possibleSignals = List("UseSR2Hack", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "ALUsub", "ALUinc", "DrALU", "Din", "WrREG", "DrREG", "LdPC", "LdZ", "UseDESTHack", "StoreSR1Hack", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "DrMEM", "LdA", "LdB", "LdIR")
-
+  val possibleSignals = List("UseSR2Hack", "DrPC", "ALUFunc", "ALUadd", "ALUnand", "ALUsub", "ALUinc", "DrALU", "Din", "DrMEM", "WrREG", "DrREG", "LdPC", "LdZ", "UseDESTHack", "StoreSR1Hack", "DrOFF", "LdMAR", "Addr", "Din", "WrMEM", "LdA", "LdB", "LdIR")
+  // These are the keys/signals that just communicate information to the Simulationmanager, and don't have a component in the datapath 
+  var ignoreKeys = List("ALUadd", "ALUnand", "ALUsub", "ALUinc", "UseDESTHack", "StoreSR1Hack", "UseSR2Hack")
   def stepInstruction(i: Int) {
     println("Current step: " + currentStep)
     InputManager.updateStep(currentStep+1);
@@ -23,10 +23,9 @@ object SimulationManager {
     }
     var step = currentInstruction.get.getSignals(currentStep) //get all signals for step 0 of add
     // first make sure regs is outputing right info
-    var useSR2insteadOfSR1 = false
     def updateRegMemOffOutput() = {
       val output = (
-        if (useSR2insteadOfSR1) {
+        if (step("UseSR2Hack")) {
           // Don't use the immediate value to index into the registers
           if (!step("DrOFF")) {
             InputManager.getRegVal( InputManager.getRegisterInput("sr2") )
@@ -45,47 +44,41 @@ object SimulationManager {
     updateRegMemOffOutput()
     for( key <- possibleSignals;
          value = step(key)) {
-      if (key == "UseSR2Hack") {
-        useSR2insteadOfSR1 = value
-        println("USE SR2 INSTEAD OF SR1: " + value)
-        updateRegMemOffOutput()
-      } else {
-        def activateFunc(inputs: Array[Short]) = {
-          if (key == "ALUFunc") {
-            if (step("ALUadd"))
-              inputs.reduceLeft((j,k)=>(j+k).toShort)
-            else if (step("ALUinc"))
-              (inputs(0)+1).toShort
-            else if (step("ALUsub"))
-              (inputs(0)-inputs(1)).toShort
-            else if (step("ALUnand"))
-              (~(inputs(0)&inputs(1))).toShort
-            else {
-              println("BAD INSTRUCTION")
-              println(step)
-              0
-            }
-          } else if (key == "WrREG") {
-            if (step("StoreSR1Hack"))
-              InputManager.updateReg(InputManager.getRegisterInput("sr1") ,inputs(0))
-            else
-              InputManager.updateReg(InputManager.getRegisterInput("rd") ,inputs(0))
-            updateRegMemOffOutput()
-          } else if (key == "WrMEM") {
-            InputManager.updateMem(inputs(0),inputs(1))
-            updateRegMemOffOutput()
-          } else {
-            inputs(0)
+      def activateFunc(inputs: Array[Short]) = {
+        if (key == "ALUFunc") {
+          if (step("ALUadd"))
+            inputs.reduceLeft((j,k)=>(j+k).toShort)
+          else if (step("ALUinc"))
+            (inputs(0)+1).toShort
+          else if (step("ALUsub"))
+            (inputs(0)-inputs(1)).toShort
+          else if (step("ALUnand"))
+            (~(inputs(0)&inputs(1))).toShort
+          else {
+            println("BAD INSTRUCTION")
+            println(step)
+            0
           }
-        }.toShort
-        // not one of our extra information signals
-        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "ALUinc" && key != "UseDESTHack" && key != "StoreSR1Hack" && key != "UseSR2Hack") {
-          if (value) {
-            DataPath.activate(key, activateFunc)
-            println("Activating " + key)
-          } else
-            DataPath.deactivate(key)
+        } else if (key == "WrREG") {
+          if (step("StoreSR1Hack"))
+            InputManager.updateReg(InputManager.getRegisterInput("sr1") ,inputs(0))
+          else
+            InputManager.updateReg(InputManager.getRegisterInput("rd") ,inputs(0))
+          updateRegMemOffOutput()
+        } else if (key == "WrMEM") {
+          InputManager.updateMem(inputs(0),inputs(1))
+          updateRegMemOffOutput()
+        } else {
+          inputs(0)
         }
+      }.toShort
+      // not one of our extra information signals
+      if (!ignoreKeys.contains(key)) {
+        if (value) {
+          DataPath.activate(key, activateFunc)
+          println("Activating " + key)
+        } else
+          DataPath.deactivate(key)
       }
     }
     // at the end, make sure the ALU is updated
@@ -105,7 +98,7 @@ object SimulationManager {
     if (fullReset) {
       InputManager.updateStep(-1);
       for( key <- possibleSignals) {
-        if (key != "ALUadd" && key != "ALUnand" && key != "ALUsub" && key != "ALUinc" && key != "UseDESTHack" && key != "StoreSR1Hack" && key != "UseSR2Hack") {
+        if (!ignoreKeys.contains(key)) {
           DataPath.deactivate(key)
         }
       }

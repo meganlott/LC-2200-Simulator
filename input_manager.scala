@@ -53,6 +53,7 @@ object InputManager {
 
   //reset button
   val reset = new Button("Reset")
+    reset.setTooltip(new Tooltip("Reset Simulation"))
     reset.layoutX = 20
     reset.layoutY = 90
     reset.setDisable(true)
@@ -185,15 +186,14 @@ object InputManager {
     
   val scrollpane2 : ScrollPane = new ScrollPane 
     val memData = new ObservableBuffer[MemInfo]()
-    memData.addAll(MemInfo("0x0000","0x0000"),
-        MemInfo("0x0001","0x0001"),
-        MemInfo("0x0002","0x0002"),
-        MemInfo("0x0003","0x0003"),
-        MemInfo("0x0004","0x0004"),
-        MemInfo("0x0005","0x0005"),
-        MemInfo("0x0006","0x0006"),
-        MemInfo("0x0007","0x0007")
-        )
+    //2^16 entries in memory
+    val numMemEntries = 65535
+    for (i <- 0 to numMemEntries) {
+      var str = Integer.toHexString(i)
+      while(str.length < 4) { str = "0"+str }
+      var hexstr = "0x"+str
+      memData.addAll(MemInfo(hexstr,hexstr))
+    }
 
     val memTable = new TableView(memData)
     val col3 = new TableColumn[MemInfo, String]("Address")

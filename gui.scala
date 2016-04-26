@@ -458,8 +458,8 @@ class TriComp(val xx: Double, val yy: Double, val w: Double, val h: Double, val 
   shape.strokeWidth = 2
   // Add things to the datapath and pane
   DataPath.pane.children += shape
-  DataPath.addComponent(this)
   val name = n;
+  DataPath.addComponent(this)
 
   /**
    * Gets the proper location for an input wire
@@ -813,7 +813,7 @@ object LC2200Simulator extends JFXApp {
 
     // Create SignEx and driver
     val signEx = new RectComp(xBasis + 5, 200, 60, 50, "sign\nextend");
-    val signDrive = new TriComp(xBasis + 35, 270, 30, 30, "DrIFF")
+    val signDrive = new TriComp(xBasis + 35, 270, 30, 30, "DrOFF")
     signDrive.inputToComponent(signEx)
     signDrive.outputToBus()
     signDrive.createActivator("DrOFF", -1)
